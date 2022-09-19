@@ -1,5 +1,5 @@
 build:
-	go build -o sp cmd/sp/main.go
+	go build -o sp cmd/sp/*.go
 
 lint:
 	go fmt ./...

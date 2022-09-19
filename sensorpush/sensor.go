@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sort"
+
+	"github.com/rconradharris/go-sensorpush/units"
 )
 
 type SensorType int
@@ -38,8 +41,8 @@ type SensorService service
 
 type Alert struct {
 	Enabled bool
-	Max     float32
-	Min     float32
+	Max     units.Temperature
+	Min     units.Temperature
 }
 
 type Alerts struct {
@@ -49,7 +52,7 @@ type Alerts struct {
 
 type Calibration struct {
 	Humidity    float32
-	Temperature float32
+	Temperature units.Temperature
 }
 
 type Sensor struct {
@@ -61,7 +64,7 @@ type Sensor struct {
 	DeviceID       string
 	ID             string
 	Name           string
-	RSSI           float32 // Wireless signal strength in dB at last reading
+	RSSI           int // Wireless signal strength in dB at last reading
 	// TODO: tags
 	Type SensorType
 }
@@ -95,14 +98,31 @@ type sensorResponse struct {
 	DeviceID       string              `json:"deviceId"`
 	ID             string              `json:"id"`
 	Name           string              `json:"name"`
-	RSSI           float32             `json:"rssi"`
+	RSSI           int                 `json:"rssi"`
 	// TODO: tags
 	Type string `json:"type"`
 }
 
 type sensorsResponse map[string]sensorResponse
 
-func (s *SensorService) List(ctx context.Context, active bool) ([]*Sensor, error) {
+type SensorSlice []*Sensor
+
+func (s SensorSlice) Len() int {
+	return len(s)
+}
+
+func (s SensorSlice) Less(i, j int) bool {
+	return s[i].Name < s[j].Name
+}
+
+func (s SensorSlice) Swap(i, j int) {
+	tmp := s[i]
+	s[i] = s[j]
+	s[j] = tmp
+}
+
+// List returns the sensors matching the active criteria in alphabetical order
+func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, error) {
 	var s0 []*Sensor
 
 	sreq := sensorsRequest{Active: active}
@@ -118,7 +138,7 @@ func (s *SensorService) List(ctx context.Context, active bool) ([]*Sensor, error
 		return s0, err
 	}
 
-	sensors := make([]*Sensor, 0, len(ssresp))
+	sensors := make(SensorSlice, 0, len(ssresp))
 	for id1, sresp := range ssresp {
 		if id1 != sresp.ID {
 			return s0, fmt.Errorf("ID mismatch %s != %s", id1, sresp.ID)
@@ -132,19 +152,19 @@ func (s *SensorService) List(ctx context.Context, active bool) ([]*Sensor, error
 			Alerts: Alerts{
 				Humidity: Alert{
 					Enabled: a.Humidity.Enabled,
-					Max:     a.Humidity.Max,
-					Min:     a.Humidity.Min,
+					Max:     units.NewTemperatureF(a.Humidity.Max),
+					Min:     units.NewTemperatureF(a.Humidity.Min),
 				},
 				Temperature: Alert{
 					Enabled: a.Temperature.Enabled,
-					Max:     a.Temperature.Max,
-					Min:     a.Temperature.Min,
+					Max:     units.NewTemperatureF(a.Temperature.Max),
+					Min:     units.NewTemperatureF(a.Temperature.Min),
 				},
 			},
 			BatteryVoltage: sresp.BatteryVoltage,
 			Calibration: Calibration{
 				Humidity:    c.Humidity,
-				Temperature: c.Temperature,
+				Temperature: units.NewTemperatureF(c.Temperature),
 			},
 			DeviceID: sresp.DeviceID,
 			ID:       sresp.ID,
@@ -155,6 +175,7 @@ func (s *SensorService) List(ctx context.Context, active bool) ([]*Sensor, error
 		sensors = append(sensors, s)
 	}
 
-	return sensors, nil
+	sort.Sort(sensors)
 
+	return sensors, nil
 }
