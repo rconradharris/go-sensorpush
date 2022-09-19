@@ -24,6 +24,14 @@ func (s StatusEnum) String() string {
 	return "unknown"
 }
 
+func newStatusEnum(s string) StatusEnum {
+	switch s {
+	case "ok":
+		return StatusOK
+	}
+	return StatusUnknown
+}
+
 type Status struct {
 	Deployed time.Time
 	Message  string
@@ -70,17 +78,12 @@ func (s *StatusService) Get(ctx context.Context) (*Status, error) {
 		return s0, err
 	}
 
-	senum := StatusUnknown
-	if sresp.Status == "ok" {
-		senum = StatusOK
-	}
-
 	st := &Status{
 		Message:  sresp.Message,
 		Deployed: depT,
 		MS:       sresp.MS,
 		Stack:    sresp.Stack,
-		Status:   senum,
+		Status:   newStatusEnum(sresp.Status),
 		Time:     srvT,
 		Version:  sresp.Version,
 	}

@@ -28,6 +28,7 @@ type Client struct {
 
 	// Services
 	Auth   *AuthService
+	Sensor *SensorService
 	Status *StatusService
 }
 
@@ -60,14 +61,20 @@ func NewClient(httpClient *http.Client) *Client {
 
 	// Services
 	c.Auth = &AuthService{c}
+	c.Sensor = &SensorService{c}
 	c.Status = &StatusService{c}
 
 	return c
 }
 
+// NewBaseRequest makes an unauthenticated request
 func (c *Client) NewBaseRequest(ctx context.Context, method, urlStr string, body any) (*http.Request, error) {
 	if !strings.HasSuffix(c.BaseURL.Path, "/") {
 		return nil, fmt.Errorf("BaseURL must have trailing slash, but %q does not", c.BaseURL)
+	}
+
+	if strings.HasPrefix(urlStr, "/") {
+		return nil, fmt.Errorf("urlStr must not have trailing slash, but %q does", urlStr)
 	}
 
 	u, err := c.BaseURL.Parse(urlStr)
@@ -103,6 +110,19 @@ func (c *Client) NewBaseRequest(ctx context.Context, method, urlStr string, body
 	return req, nil
 }
 
+// NewRequest makes an authenticated request using the access token
+func (c *Client) NewRequest(ctx context.Context, method, urlStr string, body any) (*http.Request, error) {
+	if c.accessToken == "" {
+		return nil, fmt.Errorf("access token required")
+	}
+	req, err := c.NewBaseRequest(ctx, method, urlStr, body)
+	if err != nil {
+		return req, err
+	}
+	req.Header.Set("Authorization", string(c.accessToken))
+	return req, err
+}
+
 func (c *Client) UseAccessToken(tok AccessToken) {
 	c.accessToken = tok
 }
@@ -117,7 +137,31 @@ func (c *Client) BareDo(req *http.Request) (*Response, error) {
 	}
 
 	resp := newResponse(rawResp)
-	return resp, nil
+	err = CheckResponse(rawResp)
+	return resp, err
+}
+
+type ErrorResponse struct {
+	Message    string `json:"message"`
+	StatusCode string `json:"statusCode"`
+	Type       string `json:"type"`
+}
+
+func (e ErrorResponse) Error() string {
+	return fmt.Sprintf("type=%s, msg=\"%s\"", e.Type, e.Message)
+}
+
+func CheckResponse(r *http.Response) error {
+	if c := r.StatusCode; 200 <= c && c <= 299 {
+		return nil
+	}
+	defer r.Body.Close()
+	errResp := ErrorResponse{}
+	err := json.NewDecoder(r.Body).Decode(&errResp)
+	if err != nil {
+		return err
+	}
+	return errResp
 }
 
 func (c *Client) Do(req *http.Request, v any) (*Response, error) {
