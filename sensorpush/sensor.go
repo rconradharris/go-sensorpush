@@ -39,15 +39,21 @@ func newSensorType(s string) SensorType {
 
 type SensorService service
 
-type Alert struct {
+type AlertHumidity struct {
+	Enabled bool
+	Max     float32
+	Min     float32
+}
+
+type AlertTemperature struct {
 	Enabled bool
 	Max     units.Temperature
 	Min     units.Temperature
 }
 
 type Alerts struct {
-	Humidity    Alert
-	Temperature Alert
+	Humidity    AlertHumidity
+	Temperature AlertTemperature
 }
 
 type Calibration struct {
@@ -150,12 +156,12 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 			Active:  sresp.Active,
 			Address: sresp.Address,
 			Alerts: Alerts{
-				Humidity: Alert{
+				Humidity: AlertHumidity{
 					Enabled: a.Humidity.Enabled,
-					Max:     units.NewTemperatureF(a.Humidity.Max),
-					Min:     units.NewTemperatureF(a.Humidity.Min),
+					Max:     a.Humidity.Max,
+					Min:     a.Humidity.Min,
 				},
-				Temperature: Alert{
+				Temperature: AlertTemperature{
 					Enabled: a.Temperature.Enabled,
 					Max:     units.NewTemperatureF(a.Temperature.Max),
 					Min:     units.NewTemperatureF(a.Temperature.Min),
