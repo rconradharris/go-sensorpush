@@ -20,8 +20,8 @@ func fmtBool(b bool) string {
 	return "n"
 }
 
-func fmtHumidity(v float32) string {
-	return fmt.Sprintf("%.2f", v)
+func fmtHumidity(p units.Percentage) string {
+	return fmt.Sprintf("%.2f", p.Norm())
 }
 
 func fmtVoltage(v float32) string {

@@ -41,8 +41,8 @@ type SensorService service
 
 type AlertHumidity struct {
 	Enabled bool
-	Max     float32
-	Min     float32
+	Max     units.Percentage
+	Min     units.Percentage
 }
 
 type AlertTemperature struct {
@@ -57,7 +57,7 @@ type Alerts struct {
 }
 
 type Calibration struct {
-	Humidity    float32
+	Humidity    units.Percentage
 	Temperature units.Temperature
 }
 
@@ -158,8 +158,8 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 			Alerts: Alerts{
 				Humidity: AlertHumidity{
 					Enabled: a.Humidity.Enabled,
-					Max:     a.Humidity.Max,
-					Min:     a.Humidity.Min,
+					Max:     units.NewPercentageFloat32(a.Humidity.Max),
+					Min:     units.NewPercentageFloat32(a.Humidity.Min),
 				},
 				Temperature: AlertTemperature{
 					Enabled: a.Temperature.Enabled,
@@ -169,7 +169,7 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 			},
 			BatteryVoltage: sresp.BatteryVoltage,
 			Calibration: Calibration{
-				Humidity:    c.Humidity,
+				Humidity:    units.NewPercentageFloat32(c.Humidity),
 				Temperature: units.NewTemperatureF(c.Temperature),
 			},
 			DeviceID: sresp.DeviceID,
