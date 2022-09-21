@@ -78,7 +78,7 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 
 	c := s.Calibration
 	fmtAttrValHeading(&b, "Calibration", 0)
-	fmtAttrVal(&b, "Humidity", fmtU.Humidity(c.HumidityDelta), 1)
+	fmtAttrVal(&b, "Humidity", fmtU.HumidityDelta(c.HumidityDelta), 1)
 	fmtAttrVal(&b, "Temperature", fmtU.TemperatureDelta(c.TemperatureDelta), 1)
 
 	fmtAttrValHeading(&b, "Alerts", 0)

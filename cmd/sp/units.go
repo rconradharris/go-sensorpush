@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rconradharris/go-sensorpush/units"
 )
@@ -17,6 +18,14 @@ func newTemperatureUnit(s string) (temperatureUnit, error) {
 	}
 	var t0 temperatureUnit
 	return t0, fmt.Errorf("unknown temp unit specifier: %s", s)
+}
+
+func (u temperatureUnit) String() string {
+	switch u {
+	case tempCelsius:
+		return "c"
+	}
+	return "f"
 }
 
 const (
@@ -44,7 +53,9 @@ func (f *unitsFormatter) Temperature(t units.Temperature) string {
 	default:
 		v = t.F()
 	}
-	return fmt.Sprintf("%.2f", v)
+
+	deg := strings.ToUpper(f.cfg.temperature.String())
+	return fmt.Sprintf("%.1f °%s", v, deg)
 }
 
 func (f *unitsFormatter) TemperatureDelta(t units.TemperatureDelta) string {
@@ -55,11 +66,25 @@ func (f *unitsFormatter) TemperatureDelta(t units.TemperatureDelta) string {
 	default:
 		v = t.C()
 	}
-	return fmt.Sprintf("%.2f", v)
+
+	sign := "+"
+	if v < 0 {
+		sign = "-"
+	}
+	deg := strings.ToUpper(f.cfg.temperature.String())
+	return fmt.Sprintf("%s%.1f °%s", sign, v, deg)
 }
 
 func (f *unitsFormatter) Humidity(p units.Percentage) string {
-	return fmt.Sprintf("%.2f", p.Norm())
+	return fmt.Sprintf("%.1f", p.Norm())
+}
+
+func (f *unitsFormatter) HumidityDelta(p units.Percentage) string {
+	sign := "+"
+	if p.Norm() < 0 {
+		sign = "-"
+	}
+	return fmt.Sprintf("%s%.1f", sign, p.Norm())
 }
 
 func (f *unitsFormatter) SignalStrength(v int) string {
