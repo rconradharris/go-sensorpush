@@ -39,10 +39,10 @@ func newUnitsFormatter(cfg unitsCfg) *unitsFormatter {
 func (f *unitsFormatter) Temperature(t units.Temperature) string {
 	var v float32
 	switch f.cfg.temperature {
-	case tempFahrenheit:
-		v = t.F()
-	default:
+	case tempCelsius:
 		v = t.C()
+	default:
+		v = t.F()
 	}
 	return fmt.Sprintf("%.2f", v)
 }
@@ -58,14 +58,14 @@ func (f *unitsFormatter) TemperatureDelta(t units.TemperatureDelta) string {
 	return fmt.Sprintf("%.2f", v)
 }
 
-func fmtHumidity(p units.Percentage) string {
+func (f *unitsFormatter) Humidity(p units.Percentage) string {
 	return fmt.Sprintf("%.2f", p.Norm())
 }
 
-func fmtSignalStrength(v int) string {
+func (f *unitsFormatter) SignalStrength(v int) string {
 	return fmt.Sprintf("%d", v)
 }
 
-func fmtVoltage(v float32) string {
+func (f *unitsFormatter) Voltage(v float32) string {
 	return fmt.Sprintf("%.2f", v)
 }

@@ -71,14 +71,14 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	fmtAttrVal(&b, "Name", s.Name, 0)
 	fmtAttrVal(&b, "Type", s.Type.String(), 0)
 	fmtAttrVal(&b, "Active", fmtBool(s.Active), 0)
-	fmtAttrVal(&b, "Battery(V)", fmtVoltage(s.BatteryVoltage), 0)
-	fmtAttrVal(&b, "Signal(dB)", fmtSignalStrength(s.RSSI), 0)
+	fmtAttrVal(&b, "Battery(V)", fmtU.Voltage(s.BatteryVoltage), 0)
+	fmtAttrVal(&b, "Signal(dB)", fmtU.SignalStrength(s.RSSI), 0)
 	fmtAttrVal(&b, "DeviceID", s.DeviceID, 0)
 	fmtAttrVal(&b, "ID", s.ID, 0)
 
 	c := s.Calibration
 	fmtAttrValHeading(&b, "Calibration", 0)
-	fmtAttrVal(&b, "Humidity", fmtHumidity(c.HumidityDelta), 1)
+	fmtAttrVal(&b, "Humidity", fmtU.Humidity(c.HumidityDelta), 1)
 	fmtAttrVal(&b, "Temperature", fmtU.TemperatureDelta(c.TemperatureDelta), 1)
 
 	fmtAttrValHeading(&b, "Alerts", 0)
@@ -86,8 +86,8 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	ah := s.Alerts.Humidity
 	fmtAttrValHeading(&b, "Humidity", 1)
 	fmtAttrVal(&b, "Enabled", fmtBool(ah.Enabled), 2)
-	fmtAttrVal(&b, "Max", fmtHumidity(ah.Max), 2)
-	fmtAttrVal(&b, "Min", fmtHumidity(ah.Min), 2)
+	fmtAttrVal(&b, "Max", fmtU.Humidity(ah.Max), 2)
+	fmtAttrVal(&b, "Min", fmtU.Humidity(ah.Min), 2)
 
 	at := s.Alerts.Temperature
 	fmtAttrValHeading(&b, "Temperature", 1)

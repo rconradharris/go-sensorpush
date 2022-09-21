@@ -43,10 +43,13 @@ func (c *SensorListCommand) Run(args []string) error {
 		return err
 	}
 
+	cfg := unitsCfg{}
+	fmtU := newUnitsFormatter(cfg)
+
 	fmt.Println(fmtSensorHeading())
 
 	for _, s := range ss {
-		fmt.Println(fmtSensorList(s))
+		fmt.Println(fmtSensorList(fmtU, s))
 	}
 
 	return nil
@@ -63,13 +66,13 @@ func fmtSensorHeading() string {
 	)
 }
 
-func fmtSensorList(s *sensorpush.Sensor) string {
+func fmtSensorList(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	return fmt.Sprintf(fmtStrSensorList,
 		s.Name,
 		s.Type,
 		fmtBool(s.Active),
-		fmtVoltage(s.BatteryVoltage),
-		fmtSignalStrength(s.RSSI),
+		fmtU.Voltage(s.BatteryVoltage),
+		fmtU.SignalStrength(s.RSSI),
 		s.DeviceID,
 	)
 }
