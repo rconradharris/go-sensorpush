@@ -2,11 +2,33 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/rconradharris/go-sensorpush/sensorpush"
 )
+
+type Runner interface {
+	Name() string
+	Run(args []string) error
+}
+
+func DispatchCommand(cmds []Runner, args []string) error {
+	if len(args) < 2 {
+		return fmt.Errorf("You must pass a sub-command")
+	}
+
+	subcommand := args[1]
+
+	for _, cmd := range cmds {
+		if cmd.Name() == subcommand {
+			return cmd.Run(args[1:])
+		}
+	}
+
+	return fmt.Errorf("Unknown subcommand: %s", subcommand)
+}
 
 func newClient(ctx context.Context) *sensorpush.Client {
 	sc := sensorpush.NewClient(nil)
@@ -37,8 +59,14 @@ func newClient(ctx context.Context) *sensorpush.Client {
 }
 
 func main() {
-	switch os.Args[1] {
-	case "sensor":
-		cmdSensor()
+	cmds := []Runner{
+		NewSensorCommand(),
 	}
+
+	if err := DispatchCommand(cmds, os.Args); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return
 }

@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-
-	"github.com/rconradharris/go-sensorpush/units"
 )
 
 const (
@@ -18,22 +16,6 @@ func fmtBool(b bool) string {
 		return "y"
 	}
 	return "n"
-}
-
-func fmtHumidity(p units.Percentage) string {
-	return fmt.Sprintf("%.2f", p.Norm())
-}
-
-func fmtVoltage(v float32) string {
-	return fmt.Sprintf("%.2f", v)
-}
-
-func fmtSignalStrength(v int) string {
-	return fmt.Sprintf("%d", v)
-}
-
-func fmtTemperature(t units.Temperature) string {
-	return fmt.Sprintf("%.2f", t.F())
 }
 
 func fmtAttrValHeading(b *strings.Builder, heading string, indent int) {

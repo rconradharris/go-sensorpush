@@ -2,12 +2,12 @@ package units
 
 type Temperature float32 // stored natively as F
 
-// NewTemperatureF creates a Temperature from a Farenheit value
+// NewTemperatureF creates a Temperature from a Fahrenheit value
 func NewTemperatureF(f float32) Temperature {
 	return Temperature(f)
 }
 
-// F returns the temperature in Farenheit
+// F returns the temperature in Fahrenheit
 func (t Temperature) F() float32 {
 	return float32(t)
 }
