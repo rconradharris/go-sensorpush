@@ -57,8 +57,8 @@ type Alerts struct {
 }
 
 type Calibration struct {
-	Humidity    units.Percentage
-	Temperature units.Temperature
+	HumidityDelta    units.Percentage
+	TemperatureDelta units.TemperatureDelta
 }
 
 type Sensor struct {
@@ -169,8 +169,8 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 			},
 			BatteryVoltage: sresp.BatteryVoltage,
 			Calibration: Calibration{
-				Humidity:    units.NewPercentageFloat32(c.Humidity),
-				Temperature: units.NewTemperatureF(c.Temperature),
+				HumidityDelta:    units.NewPercentageFloat32(c.Humidity),
+				TemperatureDelta: units.NewTemperatureDeltaF(c.Temperature),
 			},
 			DeviceID: sresp.DeviceID,
 			ID:       sresp.ID,

@@ -47,6 +47,17 @@ func (f *unitsFormatter) Temperature(t units.Temperature) string {
 	return fmt.Sprintf("%.2f", v)
 }
 
+func (f *unitsFormatter) TemperatureDelta(t units.TemperatureDelta) string {
+	var v float32
+	switch f.cfg.temperature {
+	case tempFahrenheit:
+		v = t.F()
+	default:
+		v = t.C()
+	}
+	return fmt.Sprintf("%.2f", v)
+}
+
 func fmtHumidity(p units.Percentage) string {
 	return fmt.Sprintf("%.2f", p.Norm())
 }
