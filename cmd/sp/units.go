@@ -55,7 +55,7 @@ func (f *unitsFormatter) Temperature(t units.Temperature) string {
 	}
 
 	deg := strings.ToUpper(f.cfg.temperature.String())
-	return fmt.Sprintf("%.1f °%s", v, deg)
+	return fmt.Sprintf("%.1f°%s", v, deg)
 }
 
 func (f *unitsFormatter) TemperatureDelta(t units.TemperatureDelta) string {
@@ -72,19 +72,20 @@ func (f *unitsFormatter) TemperatureDelta(t units.TemperatureDelta) string {
 		sign = "-"
 	}
 	deg := strings.ToUpper(f.cfg.temperature.String())
-	return fmt.Sprintf("%s%.1f °%s", sign, v, deg)
+	return fmt.Sprintf("%s%.1f°%s", sign, v, deg)
 }
 
-func (f *unitsFormatter) Humidity(p units.Percentage) string {
-	return fmt.Sprintf("%.1f", p.Norm())
+func (f *unitsFormatter) Humidity(h units.Humidity) string {
+	return fmt.Sprintf("%.1f%%", h.Pct())
 }
 
-func (f *unitsFormatter) HumidityDelta(p units.Percentage) string {
+func (f *unitsFormatter) HumidityDelta(h units.HumidityDelta) string {
+	v := h.Pct()
 	sign := "+"
-	if p.Norm() < 0 {
+	if v < 0 {
 		sign = "-"
 	}
-	return fmt.Sprintf("%s%.1f", sign, p.Norm())
+	return fmt.Sprintf("%s%.1f%%", sign, v)
 }
 
 func (f *unitsFormatter) SignalStrength(v int) string {
