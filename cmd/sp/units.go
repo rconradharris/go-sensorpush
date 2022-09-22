@@ -88,10 +88,10 @@ func (f *unitsFormatter) HumidityDelta(h units.HumidityDelta) string {
 	return fmt.Sprintf("%s%.1f%%", sign, v)
 }
 
-func (f *unitsFormatter) SignalStrength(v int) string {
-	return fmt.Sprintf("%d", v)
+func (f *unitsFormatter) SignalStrength(v units.SignalStrength) string {
+	return fmt.Sprintf("%.0f dB", v.DB())
 }
 
 func (f *unitsFormatter) Voltage(v units.Voltage) string {
-	return fmt.Sprintf("%.1fV", v.V())
+	return fmt.Sprintf("%.1f V", v.V())
 }

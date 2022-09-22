@@ -61,7 +61,7 @@ func fmtSensorHeading() string {
 		"Type",
 		"Active",
 		"Battery",
-		"Signal(dB)",
+		"Signal",
 		"DeviceID",
 	)
 }

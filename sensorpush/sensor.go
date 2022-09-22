@@ -70,7 +70,7 @@ type Sensor struct {
 	DeviceID       string
 	ID             string
 	Name           string
-	RSSI           int // Wireless signal strength in dB at last reading
+	RSSI           units.SignalStrength // strength at last reading
 	// TODO: tags
 	Type SensorType
 }
@@ -104,7 +104,7 @@ type sensorResponse struct {
 	DeviceID       string              `json:"deviceId"`
 	ID             string              `json:"id"`
 	Name           string              `json:"name"`
-	RSSI           int                 `json:"rssi"`
+	RSSI           float32             `json:"rssi"`
 	// TODO: tags
 	Type string `json:"type"`
 }
@@ -175,7 +175,7 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 			DeviceID: sresp.DeviceID,
 			ID:       sresp.ID,
 			Name:     sresp.Name,
-			RSSI:     sresp.RSSI,
+			RSSI:     units.NewSignalStrength(sresp.RSSI),
 			Type:     newSensorType(sresp.Type),
 		}
 		sensors = append(sensors, s)
