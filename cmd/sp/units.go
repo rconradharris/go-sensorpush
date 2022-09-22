@@ -92,6 +92,6 @@ func (f *unitsFormatter) SignalStrength(v int) string {
 	return fmt.Sprintf("%d", v)
 }
 
-func (f *unitsFormatter) Voltage(v float32) string {
-	return fmt.Sprintf("%.2f", v)
+func (f *unitsFormatter) Voltage(v units.Voltage) string {
+	return fmt.Sprintf("%.1fV", v.V())
 }

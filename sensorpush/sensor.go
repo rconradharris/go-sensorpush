@@ -65,7 +65,7 @@ type Sensor struct {
 	Active         bool
 	Address        string // MAC address
 	Alerts         Alerts
-	BatteryVoltage float32
+	BatteryVoltage units.Voltage
 	Calibration    Calibration
 	DeviceID       string
 	ID             string
@@ -167,7 +167,7 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 					Min:     units.NewTemperatureF(a.Temperature.Min),
 				},
 			},
-			BatteryVoltage: sresp.BatteryVoltage,
+			BatteryVoltage: units.NewVoltage(sresp.BatteryVoltage),
 			Calibration: Calibration{
 				HumidityDelta:    units.NewHumidityDelta(c.Humidity),
 				TemperatureDelta: units.NewTemperatureDeltaF(c.Temperature),
