@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/rconradharris/go-sensorpush/units"
 )
@@ -90,6 +91,10 @@ func (f *unitsFormatter) HumidityDelta(h units.HumidityDelta) string {
 
 func (f *unitsFormatter) SignalStrength(v units.SignalStrength) string {
 	return fmt.Sprintf("%.0f dB", v.DB())
+}
+
+func (f *unitsFormatter) Time(t time.Time) string {
+	return t.UTC().Format(time.RFC1123)
 }
 
 func (f *unitsFormatter) Voltage(v units.Voltage) string {

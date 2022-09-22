@@ -71,8 +71,8 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	fmtAttrVal(&b, "Name", s.Name, 0)
 	fmtAttrVal(&b, "Type", s.Type.String(), 0)
 	fmtAttrVal(&b, "Active", fmtBool(s.Active), 0)
-	fmtAttrVal(&b, "Battery(V)", fmtU.Voltage(s.BatteryVoltage), 0)
-	fmtAttrVal(&b, "Signal(dB)", fmtU.SignalStrength(s.RSSI), 0)
+	fmtAttrVal(&b, "Battery", fmtU.Voltage(s.BatteryVoltage), 0)
+	fmtAttrVal(&b, "Signal", fmtU.SignalStrength(s.RSSI), 0)
 	fmtAttrVal(&b, "DeviceID", s.DeviceID, 0)
 	fmtAttrVal(&b, "ID", s.ID, 0)
 

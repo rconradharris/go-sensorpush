@@ -61,6 +61,7 @@ func newClient(ctx context.Context) *sensorpush.Client {
 func main() {
 	cmds := []Runner{
 		NewSensorCommand(),
+		NewStatusCommand(),
 	}
 
 	if err := DispatchCommand(cmds, os.Args); err != nil {
