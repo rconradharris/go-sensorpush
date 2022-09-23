@@ -37,7 +37,7 @@ type Sensor struct {
 	Active         bool
 	Address        string // MAC address
 	Alerts         Alerts
-	BatteryVoltage units.Voltage
+	BatteryVoltage *units.Voltage
 	Calibration    Calibration
 	DeviceID       string
 	ID             string
@@ -71,7 +71,7 @@ type sensorResponse struct {
 	Active         bool                `json:"active"`
 	Address        string              `json:"address"`
 	Alerts         alertsResponse      `json:"alerts"`
-	BatteryVoltage float32             `json:"battery_voltage"`
+	BatteryVoltage *float32            `json:"battery_voltage"`
 	Calibration    calibrationResponse `json:"calibration"`
 	DeviceID       string              `json:"deviceId"`
 	ID             string              `json:"id"`
@@ -147,7 +147,6 @@ func newSensor(sresp sensorResponse) *Sensor {
 				Min:     units.NewTemperatureF(a.Temperature.Min),
 			},
 		},
-		BatteryVoltage: units.NewVoltage(sresp.BatteryVoltage),
 		Calibration: Calibration{
 			HumidityDelta:    units.NewHumidityDelta(c.Humidity),
 			TemperatureDelta: units.NewTemperatureDeltaF(c.Temperature),
@@ -158,8 +157,13 @@ func newSensor(sresp sensorResponse) *Sensor {
 		Type:     newSensorType(sresp.Type),
 	}
 
-	if sresp.RSSI != nil {
-		ss := units.NewSignalStrength(*sresp.RSSI)
+	if v := sresp.BatteryVoltage; v != nil {
+		bv := units.NewVoltage(*v)
+		s.BatteryVoltage = &bv
+	}
+
+	if v := sresp.RSSI; v != nil {
+		ss := units.NewSignalStrength(*v)
 		s.RSSI = &ss
 	}
 

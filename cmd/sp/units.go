@@ -104,6 +104,9 @@ func (f *unitsFormatter) Time(t time.Time) string {
 	return t.UTC().Format(time.RFC1123)
 }
 
-func (f *unitsFormatter) Voltage(v units.Voltage) string {
+func (f *unitsFormatter) Voltage(v *units.Voltage) string {
+	if v == nil {
+		return notAvail
+	}
 	return fmt.Sprintf("%.1f V", v.V())
 }
