@@ -60,6 +60,7 @@ func newClient(ctx context.Context) *sensorpush.Client {
 
 func main() {
 	cmds := []Runner{
+		NewSampleCommand(),
 		NewSensorCommand(),
 		NewStatusCommand(),
 	}

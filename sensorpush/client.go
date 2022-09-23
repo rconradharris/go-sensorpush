@@ -28,6 +28,7 @@ type Client struct {
 
 	// Services
 	Auth   *AuthService
+	Sample *SampleService
 	Sensor *SensorService
 	Status *StatusService
 }
@@ -61,6 +62,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	// Services
 	c.Auth = &AuthService{c}
+	c.Sample = &SampleService{c}
 	c.Sensor = &SensorService{c}
 	c.Status = &StatusService{c}
 

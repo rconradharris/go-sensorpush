@@ -45,12 +45,12 @@ func (s *StatusService) Get(ctx context.Context) (*Status, error) {
 
 	fmt.Printf("sresp => %+v\n", sresp)
 
-	depT, err := parseTime(sresp.Deployed)
+	depT, err := parseTimeStatus(sresp.Deployed)
 	if err != nil {
 		return s0, err
 	}
 
-	srvT, err := parseTime(sresp.Time)
+	srvT, err := parseTimeStatus(sresp.Time)
 	if err != nil {
 		return s0, err
 	}
