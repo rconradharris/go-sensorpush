@@ -42,7 +42,7 @@ type Sensor struct {
 	DeviceID       string
 	ID             string
 	Name           string
-	RSSI           units.SignalStrength // strength at last reading
+	RSSI           *units.SignalStrength // strength at last reading
 	// TODO: tags
 	Type SensorType
 }
@@ -76,7 +76,7 @@ type sensorResponse struct {
 	DeviceID       string              `json:"deviceId"`
 	ID             string              `json:"id"`
 	Name           string              `json:"name"`
-	RSSI           float32             `json:"rssi"`
+	RSSI           *float32            `json:"rssi"`
 	// TODO: tags
 	Type string `json:"type"`
 }
@@ -121,39 +121,47 @@ func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, err
 		if id1 != sresp.ID {
 			return s0, fmt.Errorf("ID mismatch %s != %s", id1, sresp.ID)
 		}
-
-		a := sresp.Alerts
-		c := sresp.Calibration
-		s := &Sensor{
-			Active:  sresp.Active,
-			Address: sresp.Address,
-			Alerts: Alerts{
-				Humidity: AlertHumidity{
-					Enabled: a.Humidity.Enabled,
-					Max:     units.NewHumidity(a.Humidity.Max),
-					Min:     units.NewHumidity(a.Humidity.Min),
-				},
-				Temperature: AlertTemperature{
-					Enabled: a.Temperature.Enabled,
-					Max:     units.NewTemperatureF(a.Temperature.Max),
-					Min:     units.NewTemperatureF(a.Temperature.Min),
-				},
-			},
-			BatteryVoltage: units.NewVoltage(sresp.BatteryVoltage),
-			Calibration: Calibration{
-				HumidityDelta:    units.NewHumidityDelta(c.Humidity),
-				TemperatureDelta: units.NewTemperatureDeltaF(c.Temperature),
-			},
-			DeviceID: sresp.DeviceID,
-			ID:       sresp.ID,
-			Name:     sresp.Name,
-			RSSI:     units.NewSignalStrength(sresp.RSSI),
-			Type:     newSensorType(sresp.Type),
-		}
-		sensors = append(sensors, s)
+		sensors = append(sensors, newSensor(sresp))
 	}
 
 	sort.Sort(sensors)
 
 	return sensors, nil
+}
+
+func newSensor(sresp sensorResponse) *Sensor {
+	a := sresp.Alerts
+	c := sresp.Calibration
+	s := &Sensor{
+		Active:  sresp.Active,
+		Address: sresp.Address,
+		Alerts: Alerts{
+			Humidity: AlertHumidity{
+				Enabled: a.Humidity.Enabled,
+				Max:     units.NewHumidity(a.Humidity.Max),
+				Min:     units.NewHumidity(a.Humidity.Min),
+			},
+			Temperature: AlertTemperature{
+				Enabled: a.Temperature.Enabled,
+				Max:     units.NewTemperatureF(a.Temperature.Max),
+				Min:     units.NewTemperatureF(a.Temperature.Min),
+			},
+		},
+		BatteryVoltage: units.NewVoltage(sresp.BatteryVoltage),
+		Calibration: Calibration{
+			HumidityDelta:    units.NewHumidityDelta(c.Humidity),
+			TemperatureDelta: units.NewTemperatureDeltaF(c.Temperature),
+		},
+		DeviceID: sresp.DeviceID,
+		ID:       sresp.ID,
+		Name:     sresp.Name,
+		Type:     newSensorType(sresp.Type),
+	}
+
+	if sresp.RSSI != nil {
+		ss := units.NewSignalStrength(*sresp.RSSI)
+		s.RSSI = &ss
+	}
+
+	return s
 }

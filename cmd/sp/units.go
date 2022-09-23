@@ -8,6 +8,10 @@ import (
 	"github.com/rconradharris/go-sensorpush/units"
 )
 
+const (
+	notAvail = "N/A"
+)
+
 type temperatureUnit int
 
 func newTemperatureUnit(s string) (temperatureUnit, error) {
@@ -89,7 +93,10 @@ func (f *unitsFormatter) HumidityDelta(h units.HumidityDelta) string {
 	return fmt.Sprintf("%s%.1f%%", sign, v)
 }
 
-func (f *unitsFormatter) SignalStrength(v units.SignalStrength) string {
+func (f *unitsFormatter) SignalStrength(v *units.SignalStrength) string {
+	if v == nil {
+		return notAvail
+	}
 	return fmt.Sprintf("%.0f dB", v.DB())
 }
 
