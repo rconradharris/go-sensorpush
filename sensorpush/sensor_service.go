@@ -9,34 +9,6 @@ import (
 	"github.com/rconradharris/go-sensorpush/units"
 )
 
-type SensorType int
-
-const (
-	SensorTypeUnknown SensorType = iota
-	SensorTypeHT1
-	SensorTypeHTw
-)
-
-func (s SensorType) String() string {
-	switch s {
-	case SensorTypeHT1:
-		return "HT1"
-	case SensorTypeHTw:
-		return "HT.w"
-	}
-	return "unknown-sensor-type"
-}
-
-func newSensorType(s string) SensorType {
-	switch s {
-	case "HT1":
-		return SensorTypeHT1
-	case "HT.w":
-		return SensorTypeHTw
-	}
-	return SensorTypeUnknown
-}
-
 type SensorService service
 
 type AlertHumidity struct {
@@ -76,7 +48,7 @@ type Sensor struct {
 }
 
 type sensorsRequest struct {
-	Active bool `json:"active"`
+	Active *bool `json:"active,omitempty"`
 }
 
 type alertResponse struct {
@@ -131,7 +103,7 @@ func (s SensorSlice) Swap(i, j int) {
 func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, error) {
 	var s0 []*Sensor
 
-	sreq := sensorsRequest{Active: active}
+	sreq := sensorsRequest{Active: &active}
 
 	req, err := s.c.NewRequest(ctx, http.MethodPost, "devices/sensors", sreq)
 	if err != nil {
