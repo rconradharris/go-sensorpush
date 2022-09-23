@@ -13,16 +13,18 @@ const (
 )
 
 func NewSensorListCommand() *SensorListCommand {
-	sc := &SensorListCommand{
+	c := &SensorListCommand{
 		fs: flag.NewFlagSet("ls", flag.ContinueOnError),
 	}
-	return sc
+
+	c.fs.BoolVar(&c.active, "active", true, "Filter by active")
+	return c
 }
 
 type SensorListCommand struct {
 	fs *flag.FlagSet
 
-	name string
+	active bool
 }
 
 func (c *SensorListCommand) Name() string {
@@ -30,7 +32,7 @@ func (c *SensorListCommand) Name() string {
 }
 
 func (c *SensorListCommand) Run(args []string) error {
-	if err := c.fs.Parse(args); err != nil {
+	if err := c.fs.Parse(args[1:]); err != nil {
 		return err
 	}
 
@@ -38,7 +40,7 @@ func (c *SensorListCommand) Run(args []string) error {
 
 	sc := newClient(ctx)
 
-	ss, err := sc.Sensor.List(ctx, true)
+	ss, err := sc.Sensor.List(ctx, c.active)
 	if err != nil {
 		return err
 	}
