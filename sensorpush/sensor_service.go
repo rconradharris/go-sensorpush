@@ -13,14 +13,14 @@ type SensorService service
 
 type AlertHumidity struct {
 	Enabled bool
-	Max     units.Humidity
-	Min     units.Humidity
+	Max     *units.Humidity
+	Min     *units.Humidity
 }
 
 type AlertTemperature struct {
 	Enabled bool
-	Max     units.Temperature
-	Min     units.Temperature
+	Max     *units.Temperature
+	Min     *units.Temperature
 }
 
 type Alerts struct {
@@ -52,9 +52,9 @@ type sensorsRequest struct {
 }
 
 type alertResponse struct {
-	Enabled bool    `json:"enabled"`
-	Max     float32 `json:"max"`
-	Min     float32 `json:"min"`
+	Enabled bool     `json:"enabled"`
+	Max     *float32 `json:"max"`
+	Min     *float32 `json:"min"`
 }
 
 type alertsResponse struct {
@@ -138,13 +138,9 @@ func newSensor(sresp sensorResponse) *Sensor {
 		Alerts: Alerts{
 			Humidity: AlertHumidity{
 				Enabled: a.Humidity.Enabled,
-				Max:     units.NewHumidity(a.Humidity.Max),
-				Min:     units.NewHumidity(a.Humidity.Min),
 			},
 			Temperature: AlertTemperature{
 				Enabled: a.Temperature.Enabled,
-				Max:     units.NewTemperatureF(a.Temperature.Max),
-				Min:     units.NewTemperatureF(a.Temperature.Min),
 			},
 		},
 		Calibration: Calibration{
@@ -157,11 +153,37 @@ func newSensor(sresp sensorResponse) *Sensor {
 		Type:     newSensorType(sresp.Type),
 	}
 
+	// Handle nullable fields
+
+	// Humidity Alerts
+	if v := a.Humidity.Max; v != nil {
+		h := units.NewHumidity(*v)
+		s.Alerts.Humidity.Max = &h
+	}
+
+	if v := a.Humidity.Min; v != nil {
+		h := units.NewHumidity(*v)
+		s.Alerts.Humidity.Min = &h
+	}
+
+	// Temperature Alerts
+	if v := a.Temperature.Max; v != nil {
+		t := units.NewTemperatureF(*v)
+		s.Alerts.Temperature.Max = &t
+	}
+
+	if v := a.Temperature.Min; v != nil {
+		t := units.NewTemperatureF(*v)
+		s.Alerts.Temperature.Min = &t
+	}
+
+	// Battery Voltage
 	if v := sresp.BatteryVoltage; v != nil {
 		bv := units.NewVoltage(*v)
 		s.BatteryVoltage = &bv
 	}
 
+	// RSSI
 	if v := sresp.RSSI; v != nil {
 		ss := units.NewSignalStrength(*v)
 		s.RSSI = &ss
