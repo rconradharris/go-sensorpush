@@ -2,7 +2,6 @@ package sensorpush
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -42,8 +41,6 @@ func (s *StatusService) Get(ctx context.Context) (*Status, error) {
 	if err != nil {
 		return s0, err
 	}
-
-	fmt.Printf("sresp => %+v\n", sresp)
 
 	depT, err := parseTimeStatus(sresp.Deployed)
 	if err != nil {

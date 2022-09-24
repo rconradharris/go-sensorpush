@@ -5,18 +5,38 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 type Runner interface {
 	Name() string
+	Description() string
 	Run(args []string) error
+}
+
+func usage(cmds []Runner, args []string) error {
+	var b strings.Builder
+
+	// Handle sub-command (right now arbitrary nesting isn't supported)
+	cmdName := filepath.Base(args[0])
+	if cmdName != "sp" {
+		cmdName = fmt.Sprintf("sp %s", cmdName)
+	}
+
+	fmt.Fprintf(&b, "Usage: %s COMMAND\n\n", cmdName)
+	fmt.Fprintf(&b, "Commands:\n")
+	for _, cmd := range cmds {
+		fmt.Fprintf(&b, "  %-15s%s\n", cmd.Name(), cmd.Description())
+	}
+	return fmt.Errorf(b.String())
 }
 
 func DispatchCommand(cmds []Runner, args []string) error {
 	if len(args) < 2 {
-		return fmt.Errorf("You must pass a sub-command")
+		return usage(cmds, args)
 	}
 
 	subcommand := args[1]

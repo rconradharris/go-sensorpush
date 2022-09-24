@@ -31,6 +31,10 @@ func (c *SensorListCommand) Name() string {
 	return c.fs.Name()
 }
 
+func (c *SensorListCommand) Description() string {
+	return "List sensors"
+}
+
 func (c *SensorListCommand) Run(args []string) error {
 	if err := c.fs.Parse(args[1:]); err != nil {
 		return err

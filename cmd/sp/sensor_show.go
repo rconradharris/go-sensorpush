@@ -27,6 +27,10 @@ func (c *SensorShowCommand) Name() string {
 	return c.fs.Name()
 }
 
+func (c *SensorShowCommand) Description() string {
+	return "Show details for a sensor"
+}
+
 func (c *SensorShowCommand) Run(args []string) error {
 	if len(args) < 2 {
 		return fmt.Errorf("sensor show NAME_OR_ID")

@@ -21,6 +21,10 @@ func (c *SensorCommand) Name() string {
 	return c.fs.Name()
 }
 
+func (c *SensorCommand) Description() string {
+	return "Manage sensors"
+}
+
 func (c *SensorCommand) Run(args []string) error {
 	if err := c.fs.Parse(args); err != nil {
 		return err

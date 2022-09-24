@@ -26,6 +26,10 @@ func (c *statusCommand) Name() string {
 	return c.fs.Name()
 }
 
+func (c *statusCommand) Description() string {
+	return "Query for API status"
+}
+
 func (c *statusCommand) Run(args []string) error {
 	if err := c.fs.Parse(args); err != nil {
 		return err

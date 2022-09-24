@@ -23,6 +23,10 @@ func (c *SampleCommand) Name() string {
 	return c.fs.Name()
 }
 
+func (c *SampleCommand) Description() string {
+	return "Query for samples"
+}
+
 func (c *SampleCommand) Run(args []string) error {
 	if err := c.fs.Parse(args); err != nil {
 		return err
