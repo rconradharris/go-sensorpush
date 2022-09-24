@@ -10,11 +10,11 @@ import (
 )
 
 func NewSensorShowCommand() *SensorShowCommand {
-	sc := &SensorShowCommand{
+	c := &SensorShowCommand{
 		fs: flag.NewFlagSet("show", flag.ContinueOnError),
 	}
-	sc.fs.StringVar(&sc.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
-	return sc
+	c.fs.StringVar(&c.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
+	return c
 }
 
 type SensorShowCommand struct {

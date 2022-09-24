@@ -9,14 +9,18 @@ import (
 )
 
 func NewSampleCommand() *SampleCommand {
-	sc := &SampleCommand{
+	c := &SampleCommand{
 		fs: flag.NewFlagSet("sample", flag.ContinueOnError),
 	}
-	return sc
+
+	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
+	return c
 }
 
 type SampleCommand struct {
 	fs *flag.FlagSet
+
+	limit int
 }
 
 func (c *SampleCommand) Name() string {
@@ -28,7 +32,7 @@ func (c *SampleCommand) Description() string {
 }
 
 func (c *SampleCommand) Run(args []string) error {
-	if err := c.fs.Parse(args); err != nil {
+	if err := c.fs.Parse(args[1:]); err != nil {
 		return err
 	}
 
@@ -36,9 +40,9 @@ func (c *SampleCommand) Run(args []string) error {
 	sc := newClient(ctx)
 
 	filter := sensorpush.SampleQueryFilter{}
-
-	//limit := 1
-	//filter.Limit = &limit
+	if c.limit != 0 {
+		filter.Limit = &c.limit
+	}
 
 	ss, err := sc.Sample.Query(ctx, filter)
 	if err != nil {
