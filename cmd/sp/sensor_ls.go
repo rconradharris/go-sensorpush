@@ -17,12 +17,16 @@ func NewSensorListCommand() *SensorListCommand {
 		fs: flag.NewFlagSet("ls", flag.ContinueOnError),
 	}
 
+	addUnitFlags(c.fs, &c.uf)
+
 	c.fs.BoolVar(&c.active, "active", true, "Filter by active")
 	return c
 }
 
 type SensorListCommand struct {
 	fs *flag.FlagSet
+
+	uf unitFlags
 
 	active bool
 }
@@ -49,8 +53,10 @@ func (c *SensorListCommand) Run(args []string) error {
 		return err
 	}
 
-	cfg := unitsCfg{}
-	fmtU := newUnitsFormatter(cfg)
+	fmtU, err := newUnitsFormatter(&c.uf)
+	if err != nil {
+		return err
+	}
 
 	fmt.Println(fmtSensorHeading())
 

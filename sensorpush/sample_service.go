@@ -21,24 +21,23 @@ type SampleQueryFilter struct {
 }
 
 // Query returns samples matching the criteria
-func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (Samples, error) {
-	s0 := Samples{}
+func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Samples, error) {
 	sreq := samplesRequest{
 		Limit: f.Limit,
 	}
 
 	req, err := s.c.NewRequest(ctx, http.MethodPost, "samples", sreq)
 	if err != nil {
-		return s0, err
+		return nil, err
 	}
 
 	ssresp := samplesResponse{}
 	_, err = s.c.Do(req, &ssresp)
 	if err != nil {
-		return s0, err
+		return nil, err
 	}
 
-	ss := Samples{
+	ss := &Samples{
 		Sensors:      make(SensorToSamples),
 		Status:       newSampleStatus(ssresp.Status),
 		TotalSamples: ssresp.TotalSamples,
@@ -49,7 +48,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (Samples
 	// Last Time
 	t, err := parseTime(ssresp.LastTime)
 	if err != nil {
-		return s0, err
+		return nil, err
 	}
 	ss.LastTime = t
 
@@ -59,7 +58,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (Samples
 		for _, sr := range sampResps {
 			s, err := newSample(sr)
 			if err != nil {
-				return s0, err
+				return nil, err
 			}
 			samps = append(samps, s)
 		}

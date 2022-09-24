@@ -35,8 +35,10 @@ func (c *statusCommand) Run(args []string) error {
 		return err
 	}
 
-	cfg := unitsCfg{}
-	fmtU := newUnitsFormatter(cfg)
+	fmtU, err := newUnitsFormatter(nil)
+	if err != nil {
+		return err
+	}
 
 	ctx := context.Background()
 	sc := newClient(ctx)

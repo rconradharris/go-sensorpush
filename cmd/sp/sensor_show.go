@@ -13,14 +13,14 @@ func NewSensorShowCommand() *SensorShowCommand {
 	c := &SensorShowCommand{
 		fs: flag.NewFlagSet("show", flag.ContinueOnError),
 	}
-	c.fs.StringVar(&c.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
+	addUnitFlags(c.fs, &c.uf)
 	return c
 }
 
 type SensorShowCommand struct {
 	fs *flag.FlagSet
 
-	temp string
+	uf unitFlags
 }
 
 func (c *SensorShowCommand) Name() string {
@@ -42,15 +42,10 @@ func (c *SensorShowCommand) Run(args []string) error {
 		return err
 	}
 
-	tempU, err := newTemperatureUnit(c.temp)
+	fmtU, err := newUnitsFormatter(&c.uf)
 	if err != nil {
 		return err
 	}
-
-	cfg := unitsCfg{
-		temperature: tempU,
-	}
-	fmtU := newUnitsFormatter(cfg)
 
 	ctx := context.Background()
 	sc := newClient(ctx)

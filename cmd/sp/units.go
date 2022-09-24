@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"strings"
 	"time"
@@ -11,6 +12,28 @@ import (
 const (
 	notAvail = "N/A"
 )
+
+type unitFlags struct {
+	temp string
+}
+
+func addUnitFlags(fs *flag.FlagSet, f *unitFlags) {
+	fs.StringVar(&f.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
+}
+
+func newUnitsFormatter(uf *unitFlags) (*unitsFormatter, error) {
+	cfg := unitsCfg{}
+
+	if uf != nil {
+		tempU, err := newTemperatureUnit(uf.temp)
+		if err != nil {
+			return nil, err
+		}
+		cfg.temperature = tempU
+	}
+
+	return &unitsFormatter{cfg: cfg}, nil
+}
 
 type temperatureUnit int
 
@@ -44,10 +67,6 @@ type unitsCfg struct {
 
 type unitsFormatter struct {
 	cfg unitsCfg
-}
-
-func newUnitsFormatter(cfg unitsCfg) *unitsFormatter {
-	return &unitsFormatter{cfg: cfg}
 }
 
 func (f *unitsFormatter) Temperature(t *units.Temperature) string {

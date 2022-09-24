@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/rconradharris/go-sensorpush/sensorpush"
 )
@@ -13,12 +14,16 @@ func NewSampleCommand() *SampleCommand {
 		fs: flag.NewFlagSet("sample", flag.ContinueOnError),
 	}
 
+	addUnitFlags(c.fs, &c.uf)
+
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
 	return c
 }
 
 type SampleCommand struct {
 	fs *flag.FlagSet
+
+	uf unitFlags
 
 	limit int
 }
@@ -36,6 +41,11 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
+	fmtU, err := newUnitsFormatter(&c.uf)
+	if err != nil {
+		return err
+	}
+
 	ctx := context.Background()
 	sc := newClient(ctx)
 
@@ -49,7 +59,15 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
-	fmt.Printf("ss => %+v\n", ss)
+	fmt.Print(fmtSamples(fmtU, ss))
 
 	return nil
+}
+
+func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
+	var b strings.Builder
+
+	fmt.Fprintf(&b, "ss => %+v\n", ss)
+
+	return b.String()
 }
