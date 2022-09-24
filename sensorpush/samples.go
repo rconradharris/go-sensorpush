@@ -21,8 +21,8 @@ type samplesRequest struct {
 	//Active    bool     `json:"active"`
 	//Bulk      bool     `json:"bulk"`
 	//Format    string   `json:"format"`
-	Limit *int `json:"limit,omitempty"`
-	//Measures  []string `json:"measures"`
+	Limit    *int     `json:"limit,omitempty"`
+	Measures []string `json:"measures,omitempty"`
 	//Sensors   []string `json:"sensors:`
 	//StartTime string   `json:"startTime"`
 	//StopTime  string   `json:"stopTime"`

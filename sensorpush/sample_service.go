@@ -13,8 +13,8 @@ type SampleQueryFilter struct {
 	//Active    bool
 	//Bulk      bool
 	//Format    SampleFormat
-	Limit *int
-	//Measures  []Measure
+	Limit    *int
+	Measures []Measure
 	//Sensors   []Sensor
 	//StartTime time.Time
 	//StopTime  time.Time
@@ -25,6 +25,14 @@ type SampleQueryFilter struct {
 func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Samples, error) {
 	sreq := samplesRequest{
 		Limit: f.Limit,
+	}
+
+	if f.Measures != nil {
+		ms := make([]string, 0, len(f.Measures))
+		for _, m := range f.Measures {
+			ms = append(ms, m.String())
+		}
+		sreq.Measures = ms
 	}
 
 	req, err := s.c.NewRequest(ctx, http.MethodPost, "samples", sreq)

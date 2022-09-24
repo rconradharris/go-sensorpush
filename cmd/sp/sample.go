@@ -17,6 +17,8 @@ func NewSampleCommand() *SampleCommand {
 	addUnitFlags(c.fs, &c.uf)
 
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
+	c.fs.StringVar(&c.measures, "measures", "default",
+		"Measures to include (\"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
 	return c
 }
 
@@ -25,7 +27,8 @@ type SampleCommand struct {
 
 	uf unitFlags
 
-	limit int
+	limit    int
+	measures string
 }
 
 func (c *SampleCommand) Name() string {
@@ -36,8 +39,41 @@ func (c *SampleCommand) Description() string {
 	return "Query for samples"
 }
 
+func parseMeasures(str string) ([]sensorpush.Measure, error) {
+	def := false
+	ms := []sensorpush.Measure{}
+	for _, s := range strings.Split(str, ",") {
+		s = strings.TrimSpace(s)
+		if s == "default" {
+			def = true
+			continue
+		}
+
+		m, err := sensorpush.ParseMeasure(s)
+		if err != nil {
+			return nil, err
+		}
+		ms = append(ms, m)
+	}
+
+	if def && len(ms) > 0 {
+		return nil, fmt.Errorf("'default' cannot be used with other measures specified")
+	}
+
+	if def {
+		return []sensorpush.Measure{}, nil
+	}
+
+	return ms, nil
+}
+
 func (c *SampleCommand) Run(args []string) error {
 	if err := c.fs.Parse(args[1:]); err != nil {
+		return err
+	}
+
+	measures, err := parseMeasures(c.measures)
+	if err != nil {
 		return err
 	}
 
@@ -49,7 +85,10 @@ func (c *SampleCommand) Run(args []string) error {
 	ctx := context.Background()
 	sc := newClient(ctx)
 
-	filter := sensorpush.SampleQueryFilter{}
+	filter := sensorpush.SampleQueryFilter{
+		Measures: measures,
+	}
+
 	if c.limit != 0 {
 		filter.Limit = &c.limit
 	}
@@ -87,6 +126,7 @@ func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
 
 func fmtSample(b *strings.Builder, fmtU *unitsFormatter, s *sensorpush.Sample) {
 	fmtAttrVal(b, "Observed", fmtU.Time(s.Observed), 2)
+	fmtAttrVal(b, "Dew Point", fmtU.Temperature(s.DewPoint), 3)
 	fmtAttrVal(b, "Humidity", fmtU.Humidity(s.Humidity), 3)
 	fmtAttrVal(b, "Temperature", fmtU.Temperature(s.Temperature), 3)
 }

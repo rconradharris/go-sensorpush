@@ -32,13 +32,13 @@ func (m Measure) String() string {
 
 func ParseMeasure(s string) (Measure, error) {
 	switch s {
-	case "barometric_pressure":
+	case "baro":
 		return MeasureBarometricPressure, nil
-	case "dewpoint":
+	case "dew":
 		return MeasureDewPoint, nil
-	case "humidity":
+	case "hum":
 		return MeasureHumidity, nil
-	case "temperature":
+	case "temp":
 		return MeasureTemperature, nil
 	case "vpd":
 		return MeasureVPD, nil

@@ -7,6 +7,7 @@ import (
 )
 
 type Sample struct {
+	DewPoint    *units.Temperature
 	Humidity    *units.Humidity
 	Observed    time.Time
 	Temperature *units.Temperature
@@ -35,6 +36,12 @@ func (s SampleSlice) Swap(i, j int) {
 func newSample(sr sampleResponse) (*Sample, error) {
 	s := &Sample{}
 
+	// Dew Point
+	if sr.DewPoint != nil {
+		dew := units.NewTemperatureF(*sr.DewPoint)
+		s.DewPoint = &dew
+	}
+
 	// Humidity
 	if sr.Humidity != nil {
 		hum := units.NewHumidity(*sr.Humidity)
@@ -58,6 +65,7 @@ func newSample(sr sampleResponse) (*Sample, error) {
 }
 
 type sampleResponse struct {
+	DewPoint    *float32 `json:dewpoint"`
 	Humidity    *float32 `json:humidity"`
 	Observed    string   `json:"observed"`
 	Temperature *float32 `json:temperature"`
