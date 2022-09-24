@@ -7,6 +7,7 @@ import (
 )
 
 type Sample struct {
+	Humidity    *units.Humidity
 	Observed    time.Time
 	Temperature *units.Temperature
 }
@@ -18,7 +19,11 @@ func (s SampleSlice) Len() int {
 }
 
 func (s SampleSlice) Less(i, j int) bool {
-	return s[i].Observed.Before(s[j].Observed)
+	// Reverse chron
+	//
+	// The API appears to sort for us, but we sort ourselves to ensure
+	// the sort is well-defined and stable
+	return s[i].Observed.After(s[j].Observed)
 }
 
 func (s SampleSlice) Swap(i, j int) {
@@ -29,6 +34,12 @@ func (s SampleSlice) Swap(i, j int) {
 
 func newSample(sr sampleResponse) (*Sample, error) {
 	s := &Sample{}
+
+	// Humidity
+	if sr.Humidity != nil {
+		hum := units.NewHumidity(*sr.Humidity)
+		s.Humidity = &hum
+	}
 
 	// Observed
 	t, err := parseTime(sr.Observed)
@@ -47,6 +58,7 @@ func newSample(sr sampleResponse) (*Sample, error) {
 }
 
 type sampleResponse struct {
+	Humidity    *float32 `json:humidity"`
 	Observed    string   `json:"observed"`
 	Temperature *float32 `json:temperature"`
 }

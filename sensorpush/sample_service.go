@@ -4,6 +4,7 @@ import (
 	"context"
 	//"fmt"
 	"net/http"
+	"sort"
 )
 
 type SampleService service
@@ -62,6 +63,8 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 			}
 			samps = append(samps, s)
 		}
+
+		sort.Sort(samps)
 		ss.Sensors[sensorID] = samps
 		//fmt.Printf("%s: %+v\n", k, v)
 	}
