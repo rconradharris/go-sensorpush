@@ -11,13 +11,6 @@ const (
 	indentUnit      = "  "
 )
 
-func fmtBool(b bool) string {
-	if b {
-		return "y"
-	}
-	return "n"
-}
-
 func fmtAttrValHeading(b *strings.Builder, heading string, indent int) {
 	indentS := strings.Repeat(indentUnit, indent)
 	fmt.Fprintf(b, "%s%s\n", indentS, heading)

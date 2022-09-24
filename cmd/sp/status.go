@@ -58,7 +58,7 @@ func fmtStatus(fmtU *unitsFormatter, st *sensorpush.Status) string {
 
 	fmtAttrVal(&b, "Deployed", fmtU.Time(st.Deployed), 0)
 	fmtAttrVal(&b, "Message", st.Message, 0)
-	fmtAttrVal(&b, "MS", fmt.Sprintf("%d", st.MS), 0)
+	fmtAttrVal(&b, "MS", fmtU.Int(st.MS), 0)
 	fmtAttrVal(&b, "Stack", st.Stack, 0)
 	fmtAttrVal(&b, "Status", st.Status.String(), 0)
 	fmtAttrVal(&b, "Time", fmtU.Time(st.Time), 0)

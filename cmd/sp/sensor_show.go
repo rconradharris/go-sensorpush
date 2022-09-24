@@ -69,7 +69,7 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	var b strings.Builder
 	fmtAttrVal(&b, "Name", s.Name, 0)
 	fmtAttrVal(&b, "Type", s.Type.String(), 0)
-	fmtAttrVal(&b, "Active", fmtBool(s.Active), 0)
+	fmtAttrVal(&b, "Active", fmtU.Bool(s.Active), 0)
 	fmtAttrVal(&b, "Battery", fmtU.Voltage(s.BatteryVoltage), 0)
 	fmtAttrVal(&b, "Signal", fmtU.SignalStrength(s.RSSI), 0)
 	fmtAttrVal(&b, "DeviceID", s.DeviceID, 0)
@@ -84,13 +84,13 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 
 	ah := s.Alerts.Humidity
 	fmtAttrValHeading(&b, "Humidity", 1)
-	fmtAttrVal(&b, "Enabled", fmtBool(ah.Enabled), 2)
+	fmtAttrVal(&b, "Enabled", fmtU.Bool(ah.Enabled), 2)
 	fmtAttrVal(&b, "Max", fmtU.Humidity(ah.Max), 2)
 	fmtAttrVal(&b, "Min", fmtU.Humidity(ah.Min), 2)
 
 	at := s.Alerts.Temperature
 	fmtAttrValHeading(&b, "Temperature", 1)
-	fmtAttrVal(&b, "Enabled", fmtBool(at.Enabled), 2)
+	fmtAttrVal(&b, "Enabled", fmtU.Bool(at.Enabled), 2)
 	fmtAttrVal(&b, "Max", fmtU.Temperature(at.Max), 2)
 	fmtAttrVal(&b, "Min", fmtU.Temperature(at.Min), 2)
 

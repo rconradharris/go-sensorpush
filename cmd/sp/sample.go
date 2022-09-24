@@ -67,7 +67,11 @@ func (c *SampleCommand) Run(args []string) error {
 func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "ss => %+v\n", ss)
+	fmtAttrVal(&b, "Last Time", fmtU.Time(ss.LastTime), 0)
+	fmtAttrVal(&b, "Status", ss.Status.String(), 0)
+	fmtAttrVal(&b, "Total Samples", fmtU.Int(ss.TotalSamples), 0)
+	fmtAttrVal(&b, "Total Sensors", fmtU.Int(ss.TotalSensors), 0)
+	fmtAttrVal(&b, "Truncated", fmtU.Bool(ss.Truncated), 0)
 
 	return b.String()
 }

@@ -82,7 +82,7 @@ func fmtSensorList(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	return fmt.Sprintf(fmtStrSensorList,
 		s.Name,
 		s.Type,
-		fmtBool(s.Active),
+		fmtU.Bool(s.Active),
 		fmtU.Voltage(s.BatteryVoltage),
 		fmtU.SignalStrength(s.RSSI),
 		s.DeviceID,

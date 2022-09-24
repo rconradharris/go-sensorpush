@@ -135,3 +135,14 @@ func (f *unitsFormatter) Voltage(v *units.Voltage) string {
 	}
 	return fmt.Sprintf("%.1f V", v.V())
 }
+
+func (f *unitsFormatter) Int(v int) string {
+	return fmt.Sprintf("%d", v)
+}
+
+func (f *unitsFormatter) Bool(v bool) string {
+	if v {
+		return "y"
+	}
+	return "n"
+}
