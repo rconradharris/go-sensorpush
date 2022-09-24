@@ -1,6 +1,7 @@
 package sensorpush
 
 import (
+	"sort"
 	"time"
 )
 
@@ -16,6 +17,16 @@ type Samples struct {
 }
 
 type SensorSamples map[string]SampleSlice
+
+// IDs returns the sensor IDs, sorted
+func (s SensorSamples) IDs() []string {
+	ids := make([]string, 0, len(s))
+	for id := range s {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
+}
 
 type samplesRequest struct {
 	Active bool `json:"active"`

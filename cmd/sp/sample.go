@@ -137,8 +137,9 @@ func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
 	fmtAttrVal(&b, "Truncated", fmtU.Bool(ss.Truncated), 0)
 
 	fmtAttrValHeading(&b, "Sensor Samples", 0)
-	for sensorID, samples := range ss.Sensors {
-		name := fmt.Sprintf("Sensor %s", sensorID)
+	for _, id := range ss.Sensors.IDs() {
+		samples := ss.Sensors[id]
+		name := fmt.Sprintf("Sensor %s", id)
 		fmtAttrValHeading(&b, name, 1)
 		for _, s := range samples {
 			fmtSample(&b, fmtU, s)
