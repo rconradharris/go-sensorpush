@@ -127,7 +127,9 @@ func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
 func fmtSample(b *strings.Builder, fmtU *unitsFormatter, s *sensorpush.Sample) {
 	fmtAttrVal(b, "Observed", fmtU.Time(s.Observed), 2)
 	fmtAttrVal(b, "Altitude", fmtU.Distance(s.Altitude), 3)
+	fmtAttrVal(b, "Baro Pressure", fmtU.BarometricPressure(s.BarometricPressure), 3)
 	fmtAttrVal(b, "Dew Point", fmtU.Temperature(s.DewPoint), 3)
 	fmtAttrVal(b, "Humidity", fmtU.Humidity(s.Humidity), 3)
 	fmtAttrVal(b, "Temperature", fmtU.Temperature(s.Temperature), 3)
+	fmtAttrVal(b, "VPD", fmtU.VPD(s.VPD), 3)
 }

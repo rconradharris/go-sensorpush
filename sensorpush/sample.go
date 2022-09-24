@@ -7,11 +7,13 @@ import (
 )
 
 type Sample struct {
-	Altitude    *units.Distance
-	DewPoint    *units.Temperature
-	Humidity    *units.Humidity
-	Observed    time.Time
-	Temperature *units.Temperature
+	Altitude           *units.Distance
+	BarometricPressure *units.Pressure
+	DewPoint           *units.Temperature
+	Humidity           *units.Humidity
+	Observed           time.Time
+	Temperature        *units.Temperature
+	VPD                *units.Pressure
 }
 
 type SampleSlice []*Sample
@@ -43,6 +45,12 @@ func newSample(sr sampleResponse) (*Sample, error) {
 		s.Altitude = &alt
 	}
 
+	// Barometric Pressure
+	if sr.BarometricPressure != nil {
+		baro := units.NewPressureINHG(*sr.BarometricPressure)
+		s.BarometricPressure = &baro
+	}
+
 	// Dew Point
 	if sr.DewPoint != nil {
 		dew := units.NewTemperatureF(*sr.DewPoint)
@@ -68,13 +76,21 @@ func newSample(sr sampleResponse) (*Sample, error) {
 		s.Temperature = &temp
 	}
 
+	// VPD
+	if sr.VPD != nil {
+		vpd := units.NewPressureKPA(*sr.VPD)
+		s.VPD = &vpd
+	}
+
 	return s, nil
 }
 
 type sampleResponse struct {
-	Altitude    *float32 `json:"altitude"`
-	DewPoint    *float32 `json:"dewpoint"`
-	Humidity    *float32 `json:"humidity"`
-	Observed    string   `json:"observed"`
-	Temperature *float32 `json:"temperature"`
+	Altitude           *float32 `json:"altitude"`
+	BarometricPressure *float32 `json:"barometric_pressure"`
+	DewPoint           *float32 `json:"dewpoint"`
+	Humidity           *float32 `json:"humidity"`
+	Observed           string   `json:"observed"`
+	Temperature        *float32 `json:"temperature"`
+	VPD                *float32 `json:"vpd"`
 }
