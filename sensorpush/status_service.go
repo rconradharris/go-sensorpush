@@ -13,7 +13,7 @@ type Status struct {
 	Message  string
 	MS       int
 	Stack    string
-	Status   StatusEnum
+	Status   APIStatus
 	Time     time.Time
 	Version  string
 }
@@ -57,7 +57,7 @@ func (s *StatusService) Get(ctx context.Context) (*Status, error) {
 		Deployed: depT,
 		MS:       sresp.MS,
 		Stack:    sresp.Stack,
-		Status:   newStatusEnum(sresp.Status),
+		Status:   newAPIStatus(sresp.Status),
 		Time:     srvT,
 		Version:  sresp.Version,
 	}

@@ -36,14 +36,15 @@ type samplesRequest struct {
 type samplesResponse struct {
 	LastTime string `json:"last_time"`
 	//TODO: Sensors
-	//TODO: Status
-	TotalSamples int  `json:"total_samples"` // swagger has this as a 'number' but a float32 doesn't make sense here
-	TotalSensors int  `json:"total_sensors"`
-	Truncated    bool `json:"truncated"`
+	Status       string `json:"status"`
+	TotalSamples int    `json:"total_samples"` // swagger has this as a 'number' but a float32 doesn't make sense here
+	TotalSensors int    `json:"total_sensors"`
+	Truncated    bool   `json:"truncated"`
 }
 
 type Samples struct {
 	LastTime     time.Time
+	Status       SampleStatus
 	TotalSamples int
 	TotalSensors int
 	Truncated    bool
@@ -68,6 +69,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (Samples
 	}
 
 	ss := Samples{
+		Status:       newSampleStatus(ssresp.Status),
 		TotalSamples: ssresp.TotalSamples,
 		TotalSensors: ssresp.TotalSensors,
 		Truncated:    ssresp.Truncated,
