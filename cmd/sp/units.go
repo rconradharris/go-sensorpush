@@ -69,6 +69,16 @@ type unitsFormatter struct {
 	cfg unitsCfg
 }
 
+func (f *unitsFormatter) Distance(d *units.Distance) string {
+	if d == nil {
+		return notAvail
+	}
+	var v float32
+	v = d.FT()
+	unit := "ft"
+	return fmt.Sprintf("%.1f%s", v, unit)
+}
+
 func (f *unitsFormatter) Temperature(t *units.Temperature) string {
 	if t == nil {
 		return notAvail

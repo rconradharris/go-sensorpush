@@ -7,6 +7,7 @@ import (
 )
 
 type Sample struct {
+	Altitude    *units.Distance
 	DewPoint    *units.Temperature
 	Humidity    *units.Humidity
 	Observed    time.Time
@@ -35,6 +36,12 @@ func (s SampleSlice) Swap(i, j int) {
 
 func newSample(sr sampleResponse) (*Sample, error) {
 	s := &Sample{}
+
+	// Altitude
+	if sr.Altitude != nil {
+		alt := units.NewDistanceFT(*sr.Altitude)
+		s.Altitude = &alt
+	}
 
 	// Dew Point
 	if sr.DewPoint != nil {
@@ -65,8 +72,9 @@ func newSample(sr sampleResponse) (*Sample, error) {
 }
 
 type sampleResponse struct {
-	DewPoint    *float32 `json:dewpoint"`
-	Humidity    *float32 `json:humidity"`
+	Altitude    *float32 `json:"altitude"`
+	DewPoint    *float32 `json:"dewpoint"`
+	Humidity    *float32 `json:"humidity"`
 	Observed    string   `json:"observed"`
-	Temperature *float32 `json:temperature"`
+	Temperature *float32 `json:"temperature"`
 }

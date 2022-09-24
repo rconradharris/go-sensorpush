@@ -18,7 +18,7 @@ func NewSampleCommand() *SampleCommand {
 
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
 	c.fs.StringVar(&c.measures, "measures", "default",
-		"Measures to include (\"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
+		"Measures to include (\"alt\", \"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
 	return c
 }
 
@@ -126,6 +126,7 @@ func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
 
 func fmtSample(b *strings.Builder, fmtU *unitsFormatter, s *sensorpush.Sample) {
 	fmtAttrVal(b, "Observed", fmtU.Time(s.Observed), 2)
+	fmtAttrVal(b, "Altitude", fmtU.Distance(s.Altitude), 3)
 	fmtAttrVal(b, "Dew Point", fmtU.Temperature(s.DewPoint), 3)
 	fmtAttrVal(b, "Humidity", fmtU.Humidity(s.Humidity), 3)
 	fmtAttrVal(b, "Temperature", fmtU.Temperature(s.Temperature), 3)

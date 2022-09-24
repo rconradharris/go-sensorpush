@@ -7,7 +7,8 @@ import (
 type Measure int
 
 const (
-	MeasureBarometricPressure Measure = iota
+	MeasureAltitude Measure = iota
+	MeasureBarometricPressure
 	MeasureDewPoint
 	MeasureHumidity
 	MeasureTemperature
@@ -16,6 +17,8 @@ const (
 
 func (m Measure) String() string {
 	switch m {
+	case MeasureAltitude:
+		return "altitude"
 	case MeasureBarometricPressure:
 		return "barometric_pressure"
 	case MeasureDewPoint:
@@ -32,6 +35,8 @@ func (m Measure) String() string {
 
 func ParseMeasure(s string) (Measure, error) {
 	switch s {
+	case "alt":
+		return MeasureAltitude, nil
 	case "baro":
 		return MeasureBarometricPressure, nil
 	case "dew":
