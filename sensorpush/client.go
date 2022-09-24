@@ -27,10 +27,11 @@ type Client struct {
 	accessToken AccessToken
 
 	// Services
-	Auth   *AuthService
-	Sample *SampleService
-	Sensor *SensorService
-	Status *StatusService
+	Auth    *AuthService
+	Gateway *GatewayService
+	Sample  *SampleService
+	Sensor  *SensorService
+	Status  *StatusService
 }
 
 type service struct {
@@ -62,6 +63,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 	// Services
 	c.Auth = &AuthService{c}
+	c.Gateway = &GatewayService{c}
 	c.Sample = &SampleService{c}
 	c.Sensor = &SensorService{c}
 	c.Status = &StatusService{c}
