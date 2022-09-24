@@ -6,6 +6,7 @@ import (
 
 type Gateway struct {
 	LastAlert time.Time
+	LastSeen  time.Time
 	ID        string
 	Name      string
 }
@@ -41,6 +42,15 @@ func newGateway(r gatewayResponse) (*Gateway, error) {
 		g.LastAlert = t
 	}
 
+	// Last Seen
+	if r.LastSeen != "" {
+		t, err := parseTime(r.LastSeen)
+		if err != nil {
+			return nil, err
+		}
+		g.LastSeen = t
+	}
+
 	return g, nil
 }
 
@@ -49,6 +59,7 @@ type gatewaysRequest struct {
 
 type gatewayResponse struct {
 	LastAlert string `json:"last_alert"`
+	LastSeen  string `json:"last_seen"`
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 }

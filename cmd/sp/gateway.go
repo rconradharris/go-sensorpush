@@ -32,6 +32,7 @@ func (c *GatewayCommand) Run(args []string) error {
 
 	cmds := []Runner{
 		NewGatewayListCommand(),
+		NewGatewayShowCommand(),
 	}
 
 	if err := DispatchCommand(cmds, args); err != nil {

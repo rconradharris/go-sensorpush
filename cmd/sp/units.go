@@ -149,6 +149,9 @@ func (f *unitsFormatter) SignalStrength(v *units.SignalStrength) string {
 }
 
 func (f *unitsFormatter) Time(t time.Time) string {
+	if t.IsZero() {
+		return notAvail
+	}
 	//return t.UTC().Format(time.RFC1123)
 	return t.UTC().Format(time.RFC3339)
 }
