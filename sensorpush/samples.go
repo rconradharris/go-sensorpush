@@ -24,8 +24,8 @@ type samplesRequest struct {
 	Limit    *int     `json:"limit,omitempty"`
 	Measures []string `json:"measures,omitempty"`
 	//Sensors   []string `json:"sensors:`
-	//StartTime string   `json:"startTime"`
-	//StopTime  string   `json:"stopTime"`
+	StartTime string `json:"startTime,omitempty"`
+	StopTime  string `json:"stopTime,omitempty"`
 	//Tags []string
 }
 

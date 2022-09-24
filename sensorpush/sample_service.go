@@ -5,6 +5,7 @@ import (
 	//"fmt"
 	"net/http"
 	"sort"
+	"time"
 )
 
 type SampleService service
@@ -16,8 +17,8 @@ type SampleQueryFilter struct {
 	Limit    *int
 	Measures []Measure
 	//Sensors   []Sensor
-	//StartTime time.Time
-	//StopTime  time.Time
+	StartTime time.Time
+	StopTime  time.Time
 	//Tags []Tag
 }
 
@@ -34,6 +35,14 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 			ms = append(ms, m.String())
 		}
 		sreq.Measures = ms
+	}
+
+	if !f.StartTime.IsZero() {
+		sreq.StartTime = formatTime(f.StartTime)
+	}
+
+	if !f.StopTime.IsZero() {
+		sreq.StopTime = formatTime(f.StopTime)
 	}
 
 	req, err := s.c.NewRequest(ctx, http.MethodPost, "samples", sreq)

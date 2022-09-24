@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/rconradharris/go-sensorpush/sensorpush"
 )
@@ -20,6 +21,8 @@ func NewSampleCommand() *SampleCommand {
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
 	c.fs.StringVar(&c.measures, "measures", "default",
 		"Measures to include (\"alt\", \"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
+	c.fs.StringVar(&c.startTime, "start", "", "Start time (ex: \"2006-01-02T15:04:05Z07:00\")")
+	c.fs.StringVar(&c.stopTime, "stop", "", "Stop time (ex: \"2006-01-02T15:04:05Z07:00\")")
 	return c
 }
 
@@ -28,9 +31,11 @@ type SampleCommand struct {
 
 	uf unitFlags
 
-	active   bool
-	limit    int
-	measures string
+	active    bool
+	limit     int
+	measures  string
+	startTime string
+	stopTime  string
 }
 
 func (c *SampleCommand) Name() string {
@@ -94,6 +99,22 @@ func (c *SampleCommand) Run(args []string) error {
 
 	if c.limit != 0 {
 		filter.Limit = &c.limit
+	}
+
+	if c.startTime != "" {
+		t, err := time.Parse(time.RFC3339, c.startTime)
+		if err != nil {
+			return err
+		}
+		filter.StartTime = t
+	}
+
+	if c.stopTime != "" {
+		t, err := time.Parse(time.RFC3339, c.stopTime)
+		if err != nil {
+			return err
+		}
+		filter.StopTime = t
 	}
 
 	ss, err := sc.Sample.Query(ctx, filter)

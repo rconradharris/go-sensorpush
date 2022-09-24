@@ -149,7 +149,8 @@ func (f *unitsFormatter) SignalStrength(v *units.SignalStrength) string {
 }
 
 func (f *unitsFormatter) Time(t time.Time) string {
-	return t.UTC().Format(time.RFC1123)
+	//return t.UTC().Format(time.RFC1123)
+	return t.UTC().Format(time.RFC3339)
 }
 
 func (f *unitsFormatter) Voltage(v *units.Voltage) string {
