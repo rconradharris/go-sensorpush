@@ -19,7 +19,7 @@ func ParseTemperatureUnit(s string) (TemperatureUnit, error) {
 	case "c":
 		return TemperatureUnitC, nil
 	}
-	return t0, fmt.Errorf("unknown temp unit specifier: %s", s)
+	return t0, fmt.Errorf("unknown temperature unit specifier: %s", s)
 }
 
 func (u TemperatureUnit) String() string {

@@ -13,17 +13,19 @@ const (
 )
 
 type unitFlags struct {
+	dist string
 	temp string
 }
 
 func addUnitFlags(fs *flag.FlagSet, f *unitFlags) {
+	fs.StringVar(&f.dist, "dist", "ft", "feet (\"ft\") or meters (\"m\")")
 	fs.StringVar(&f.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
 }
 
 type unitsFormatter struct {
+	distU units.DistanceUnit
 	tempU units.TemperatureUnit
 }
-
 
 func newUnitsFormatter(uf *unitFlags) (*unitsFormatter, error) {
 	fmtU := &unitsFormatter{}
@@ -34,6 +36,12 @@ func newUnitsFormatter(uf *unitFlags) (*unitsFormatter, error) {
 			return nil, err
 		}
 		fmtU.tempU = tempU
+
+		distU, err := units.ParseDistanceUnit(uf.dist)
+		if err != nil {
+			return nil, err
+		}
+		fmtU.distU = distU
 	}
 
 	return fmtU, nil
@@ -43,9 +51,16 @@ func (f *unitsFormatter) Distance(d *units.Distance) string {
 	if d == nil {
 		return notAvail
 	}
+
 	var v float32
-	v = d.FT()
-	unit := "ft"
+	switch f.distU {
+	case units.DistanceUnitM:
+		v = d.M()
+	default:
+		v = d.FT()
+	}
+
+	unit := f.distU.String()
 	return fmt.Sprintf("%.1f%s", v, unit)
 }
 
@@ -53,6 +68,7 @@ func (f *unitsFormatter) Temperature(t *units.Temperature) string {
 	if t == nil {
 		return notAvail
 	}
+
 	var v float32
 	switch f.tempU {
 	case units.TemperatureUnitC:
