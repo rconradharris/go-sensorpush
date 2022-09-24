@@ -11,8 +11,24 @@ type Sample struct {
 	Temperature *units.Temperature
 }
 
-func newSample(sr sampleResponse) (Sample, error) {
-	s := Sample{}
+type SampleSlice []*Sample
+
+func (s SampleSlice) Len() int {
+	return len(s)
+}
+
+func (s SampleSlice) Less(i, j int) bool {
+	return s[i].Observed.Before(s[j].Observed)
+}
+
+func (s SampleSlice) Swap(i, j int) {
+	tmp := s[i]
+	s[i] = s[j]
+	s[j] = tmp
+}
+
+func newSample(sr sampleResponse) (*Sample, error) {
+	s := &Sample{}
 
 	// Observed
 	t, err := parseTime(sr.Observed)

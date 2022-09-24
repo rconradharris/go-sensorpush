@@ -7,7 +7,7 @@ import (
 type Samples struct {
 	LastTime time.Time
 
-	Sensors SensorToSamples
+	Sensors SensorSamples
 
 	Status       SampleStatus
 	TotalSamples int
@@ -15,7 +15,7 @@ type Samples struct {
 	Truncated    bool
 }
 
-type SensorToSamples map[string][]Sample
+type SensorSamples map[string]SampleSlice
 
 type samplesRequest struct {
 	//Active    bool     `json:"active"`

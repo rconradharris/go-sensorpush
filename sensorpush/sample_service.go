@@ -2,7 +2,7 @@ package sensorpush
 
 import (
 	"context"
-	"fmt"
+	//"fmt"
 	"net/http"
 )
 
@@ -38,7 +38,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 	}
 
 	ss := &Samples{
-		Sensors:      make(SensorToSamples),
+		Sensors:      make(SensorSamples),
 		Status:       newSampleStatus(ssresp.Status),
 		TotalSamples: ssresp.TotalSamples,
 		TotalSensors: ssresp.TotalSensors,
@@ -54,7 +54,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 
 	// Samples
 	for sensorID, sampResps := range ssresp.Sensors {
-		samps := make([]Sample, 0, len(sampResps))
+		samps := make(SampleSlice, 0, len(sampResps))
 		for _, sr := range sampResps {
 			s, err := newSample(sr)
 			if err != nil {
@@ -66,7 +66,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 		//fmt.Printf("%s: %+v\n", k, v)
 	}
 
-	fmt.Printf("ssresp => %+v\n", ssresp)
+	//fmt.Printf("ssresp => %+v\n", ssresp)
 
 	return ss, nil
 }
