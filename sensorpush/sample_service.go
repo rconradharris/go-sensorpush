@@ -10,7 +10,7 @@ import (
 type SampleService service
 
 type SampleQueryFilter struct {
-	//Active    bool
+	Active bool
 	//Bulk      bool
 	//Format    SampleFormat
 	Limit    *int
@@ -24,7 +24,8 @@ type SampleQueryFilter struct {
 // Query returns samples matching the criteria
 func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Samples, error) {
 	sreq := samplesRequest{
-		Limit: f.Limit,
+		Active: f.Active,
+		Limit:  f.Limit,
 	}
 
 	if f.Measures != nil {

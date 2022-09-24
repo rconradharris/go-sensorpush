@@ -16,6 +16,7 @@ func NewSampleCommand() *SampleCommand {
 
 	addUnitFlags(c.fs, &c.uf)
 
+	c.fs.BoolVar(&c.active, "active", true, "Filter by active devices")
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
 	c.fs.StringVar(&c.measures, "measures", "default",
 		"Measures to include (\"alt\", \"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
@@ -27,6 +28,7 @@ type SampleCommand struct {
 
 	uf unitFlags
 
+	active   bool
 	limit    int
 	measures string
 }
@@ -86,6 +88,7 @@ func (c *SampleCommand) Run(args []string) error {
 	sc := newClient(ctx)
 
 	filter := sensorpush.SampleQueryFilter{
+		Active:   c.active,
 		Measures: measures,
 	}
 

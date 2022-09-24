@@ -12,8 +12,9 @@ type Sample struct {
 	DewPoint           *units.Temperature
 	Humidity           *units.Humidity
 	Observed           time.Time
-	Temperature        *units.Temperature
-	VPD                *units.Pressure
+	// TODO: Tags
+	Temperature *units.Temperature
+	VPD         *units.Pressure
 }
 
 type SampleSlice []*Sample

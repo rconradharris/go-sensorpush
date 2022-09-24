@@ -18,7 +18,7 @@ type Samples struct {
 type SensorSamples map[string]SampleSlice
 
 type samplesRequest struct {
-	//Active    bool     `json:"active"`
+	Active bool `json:"active"`
 	//Bulk      bool     `json:"bulk"`
 	//Format    string   `json:"format"`
 	Limit    *int     `json:"limit,omitempty"`
