@@ -69,6 +69,9 @@ func fmtGatewayShow(fmtU *unitsFormatter, g *sensorpush.Gateway) string {
 	fmtAttrVal(&b, "ID", g.ID, 0)
 	fmtAttrVal(&b, "Last Alert", fmtU.Time(g.LastAlert), 0)
 	fmtAttrVal(&b, "Last Seen", fmtU.Time(g.LastSeen), 0)
+	fmtAttrVal(&b, "Message", g.Message, 0)
+	fmtAttrVal(&b, "Paired", fmtU.Bool(g.Paired), 0)
+	fmtAttrVal(&b, "Version", g.Version, 0)
 
 	return b.String()
 }

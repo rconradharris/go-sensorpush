@@ -8,7 +8,11 @@ type Gateway struct {
 	LastAlert time.Time
 	LastSeen  time.Time
 	ID        string
+	Message   string
 	Name      string
+	Paired    bool
+	// TODO: Tags
+	Version string
 }
 
 type GatewaySlice []*Gateway
@@ -29,8 +33,11 @@ func (s GatewaySlice) Swap(i, j int) {
 
 func newGateway(r gatewayResponse) (*Gateway, error) {
 	g := &Gateway{
-		ID:   r.ID,
-		Name: r.Name,
+		ID:      r.ID,
+		Message: r.Message,
+		Name:    r.Name,
+		Paired:  r.Paired,
+		Version: r.Version,
 	}
 
 	// Last Alert
@@ -61,7 +68,10 @@ type gatewayResponse struct {
 	LastAlert string `json:"last_alert"`
 	LastSeen  string `json:"last_seen"`
 	ID        string `json:"id"`
+	Message   string `json:"message"`
 	Name      string `json:"name"`
+	Paired    bool   `json:"paired"`
+	Version   string `json:"version"`
 }
 
 type gatewaysResponse map[string]gatewayResponse

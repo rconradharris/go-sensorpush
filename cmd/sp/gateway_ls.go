@@ -9,7 +9,7 @@ import (
 )
 
 const (
-// fmtStrSensorList = "%-20s %-8s %6s %12s %10s %10s"
+	fmtStrGatewayList = "%-20s %6s %-20s %s"
 )
 
 func NewGatewayListCommand() *GatewayListCommand {
@@ -36,6 +36,11 @@ func (c *GatewayListCommand) Run(args []string) error {
 		return err
 	}
 
+	fmtU, err := newUnitsFormatter(nil)
+	if err != nil {
+		return err
+	}
+
 	ctx := context.Background()
 
 	sc := newClient(ctx)
@@ -45,38 +50,29 @@ func (c *GatewayListCommand) Run(args []string) error {
 		return err
 	}
 
-	//fmt.Println(fmtSensorHeading())
+	fmt.Println(fmtGatewayListHeading())
 
 	for _, g := range gs {
-		fmt.Println(fmtGatewayList(g))
+		fmt.Println(fmtGatewayList(fmtU, g))
 	}
 
 	return nil
 }
 
-/*
-func fmtSensorHeading() string {
-	return fmt.Sprintf(fmtStrSensorList,
+func fmtGatewayListHeading() string {
+	return fmt.Sprintf(fmtStrGatewayList,
 		"Name",
-		"Type",
-		"Active",
-		"Battery",
-		"Signal",
-		"DeviceID",
+		"Paired",
+		"Last Seen",
+		"ID",
 	)
 }
-*/
 
-func fmtGatewayList(g *sensorpush.Gateway) string {
-	return fmt.Sprintf("%s %s", g.Name, g.LastSeen)
-	/*
-		return fmt.Sprintf(fmtStrSensorList,
-			s.Name,
-			s.Type,
-			fmtU.Bool(s.Active),
-			fmtU.Voltage(s.BatteryVoltage),
-			fmtU.SignalStrength(s.RSSI),
-			s.DeviceID,
-		)
-	*/
+func fmtGatewayList(fmtU *unitsFormatter, g *sensorpush.Gateway) string {
+	return fmt.Sprintf(fmtStrGatewayList,
+		g.Name,
+		fmtU.Bool(g.Paired),
+		fmtU.Time(g.LastSeen),
+		g.ID,
+	)
 }
