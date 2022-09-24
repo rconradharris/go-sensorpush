@@ -68,7 +68,7 @@ func fmtSensorHeading() string {
 */
 
 func fmtGatewayList(g *sensorpush.Gateway) string {
-	return fmt.Sprintf("%s %s", g.Name, g.ID)
+	return fmt.Sprintf("%s %s", g.Name, g.LastAlert)
 	/*
 		return fmt.Sprintf(fmtStrSensorList,
 			s.Name,

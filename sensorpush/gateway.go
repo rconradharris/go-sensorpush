@@ -1,10 +1,13 @@
 package sensorpush
 
-import ()
+import (
+	"time"
+)
 
 type Gateway struct {
-	ID   string
-	Name string
+	LastAlert time.Time
+	ID        string
+	Name      string
 }
 
 type GatewaySlice []*Gateway
@@ -23,19 +26,31 @@ func (s GatewaySlice) Swap(i, j int) {
 	s[j] = tmp
 }
 
-func newGateway(r gatewayResponse) *Gateway {
-	return &Gateway{
+func newGateway(r gatewayResponse) (*Gateway, error) {
+	g := &Gateway{
 		ID:   r.ID,
 		Name: r.Name,
 	}
+
+	// Last Alert
+	if r.LastAlert != "" {
+		t, err := parseTime(r.LastAlert)
+		if err != nil {
+			return nil, err
+		}
+		g.LastAlert = t
+	}
+
+	return g, nil
 }
 
 type gatewaysRequest struct {
 }
 
 type gatewayResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	LastAlert string `json:"last_alert"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
 }
 
 type gatewaysResponse map[string]gatewayResponse

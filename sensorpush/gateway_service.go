@@ -28,7 +28,11 @@ func (s *GatewayService) List(ctx context.Context) (GatewaySlice, error) {
 
 	gateways := make(GatewaySlice, 0, len(gsresp))
 	for _, gresp := range gsresp {
-		gateways = append(gateways, newGateway(gresp))
+		g, err := newGateway(gresp)
+		if err != nil {
+			return g0, err
+		}
+		gateways = append(gateways, g)
 	}
 
 	sort.Sort(gateways)
