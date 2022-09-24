@@ -1,5 +1,9 @@
 package units
 
+import (
+	"fmt"
+)
+
 type Temperature float32 // stored natively as F
 
 // NewTemperatureF creates a Temperature from a Fahrenheit value
@@ -20,6 +24,10 @@ func NewTemperatureC(c float32) Temperature {
 // C returns the temperature in Celsius
 func (t Temperature) C() float32 {
 	return fToC(float32(t))
+}
+
+func (t Temperature) String() string {
+	return fmt.Sprintf("%.1fF", t.F())
 }
 
 func fToC(f float32) float32 {
