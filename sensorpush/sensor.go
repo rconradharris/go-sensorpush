@@ -1,6 +1,8 @@
 package sensorpush
 
 import (
+	"sort"
+
 	"github.com/rconradharris/go-sensorpush/units"
 )
 
@@ -38,17 +40,29 @@ type Sensor struct {
 	Type SensorType
 }
 
-type SensorSlice []*Sensor
+type SensorMap map[SensorID]*Sensor
 
-func (s SensorSlice) Len() int {
+// SensorsAlpha returns the Sensors sorted alphabetically by Name
+func (sm SensorMap) SensorsAlpha() []*Sensor {
+	ss := make(sensorSlice, 0, len(sm))
+	for _, s := range sm {
+		ss = append(ss, s)
+	}
+	sort.Sort(ss)
+	return ss
+}
+
+type sensorSlice []*Sensor
+
+func (s sensorSlice) Len() int {
 	return len(s)
 }
 
-func (s SensorSlice) Less(i, j int) bool {
+func (s sensorSlice) Less(i, j int) bool {
 	return s[i].Name < s[j].Name
 }
 
-func (s SensorSlice) Swap(i, j int) {
+func (s sensorSlice) Swap(i, j int) {
 	tmp := s[i]
 	s[i] = s[j]
 	s[j] = tmp

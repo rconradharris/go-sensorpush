@@ -2,39 +2,33 @@ package sensorpush
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"sort"
 )
 
 type SensorService service
 
-// List returns the sensors matching the active criteria in alphabetical order
-func (s *SensorService) List(ctx context.Context, active bool) (SensorSlice, error) {
-	var s0 []*Sensor
+// List returns a map of SensorIDs to Sensors
+func (s *SensorService) List(ctx context.Context, active bool) (SensorMap, error) {
+	sm := SensorMap{}
 
 	sreq := sensorsRequest{Active: &active}
 
 	req, err := s.c.NewRequest(ctx, http.MethodPost, "devices/sensors", sreq)
 	if err != nil {
-		return s0, err
+		return sm, err
 	}
 
 	ssresp := sensorsResponse{}
 	_, err = s.c.Do(req, &ssresp)
 	if err != nil {
-		return s0, err
+		return sm, err
 	}
 
-	sensors := make(SensorSlice, 0, len(ssresp))
-	for id1, sresp := range ssresp {
-		if id1 != sresp.ID {
-			return s0, fmt.Errorf("ID mismatch %s != %s", id1, sresp.ID)
-		}
-		sensors = append(sensors, newSensor(sresp))
+	for _, sresp := range ssresp {
+		id := NewSensorID(sresp.ID)
+		s := newSensor(sresp)
+		sm[id] = s
 	}
 
-	sort.Sort(sensors)
-
-	return sensors, nil
+	return sm, nil
 }

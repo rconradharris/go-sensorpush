@@ -48,7 +48,7 @@ func (c *SensorListCommand) Run(args []string) error {
 
 	sc := newClient(ctx)
 
-	ss, err := sc.Sensor.List(ctx, c.active)
+	sm, err := sc.Sensor.List(ctx, c.active)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (c *SensorListCommand) Run(args []string) error {
 
 	fmt.Println(fmtSensorHeading())
 
-	for _, s := range ss {
+	for _, s := range sm.SensorsAlpha() {
 		fmt.Println(fmtSensorList(fmtU, s))
 	}
 

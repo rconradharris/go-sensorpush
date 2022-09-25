@@ -50,12 +50,12 @@ func (c *SensorShowCommand) Run(args []string) error {
 	ctx := context.Background()
 	sc := newClient(ctx)
 
-	ss, err := sc.Sensor.List(ctx, true)
+	sm, err := sc.Sensor.List(ctx, true)
 	if err != nil {
 		return err
 	}
 
-	s := findSensorByNameOrID(ss, nameOrID)
+	s := findSensorByNameOrID(sm, nameOrID)
 	if s == nil {
 		return fmt.Errorf("unable to find a sensor matching: '%s'", nameOrID)
 	}
@@ -104,12 +104,14 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 // 3. Case-insensitive name
 //
 // Returns nil if no match is found
-func findSensorByNameOrID(ss sensorpush.SensorSlice, nameOrID string) *sensorpush.Sensor {
+func findSensorByNameOrID(sm sensorpush.SensorMap, nameOrID string) *sensorpush.Sensor {
+	id := sensorpush.NewSensorID(nameOrID)
+	if s, ok := sm[id]; ok {
+		return s
+	}
+
 	lowerName := strings.ToLower(nameOrID)
-	for _, s := range ss {
-		if s.ID.String() == nameOrID {
-			return s
-		}
+	for _, s := range sm {
 		if s.DeviceID.String() == nameOrID {
 			return s
 		}
