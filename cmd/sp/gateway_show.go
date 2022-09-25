@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 func NewGatewayShowCommand() *GatewayShowCommand {
@@ -62,7 +62,7 @@ func (c *GatewayShowCommand) Run(args []string) error {
 	return nil
 }
 
-func fmtGatewayShow(fmtU *unitsFormatter, g *sensorpush.Gateway) string {
+func fmtGatewayShow(fmtU *unitsFormatter, g *sp.Gateway) string {
 	var b strings.Builder
 
 	fmtAttrVal(&b, "Name", g.Name, 0)
@@ -82,7 +82,7 @@ func fmtGatewayShow(fmtU *unitsFormatter, g *sensorpush.Gateway) string {
 // 2. Case-insensitive name
 //
 // Returns nil if no match is found
-func findGatewayByNameOrID(gs sensorpush.GatewaySlice, nameOrID string) *sensorpush.Gateway {
+func findGatewayByNameOrID(gs sp.GatewaySlice, nameOrID string) *sp.Gateway {
 	lowerName := strings.ToLower(nameOrID)
 	for _, g := range gs {
 		if g.ID == nameOrID {

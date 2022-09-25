@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 func NewSensorShowCommand() *SensorShowCommand {
@@ -65,7 +65,7 @@ func (c *SensorShowCommand) Run(args []string) error {
 	return nil
 }
 
-func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
+func fmtSensorShow(fmtU *unitsFormatter, s *sp.Sensor) string {
 	var b strings.Builder
 	fmtAttrVal(&b, "Name", s.Name, 0)
 	fmtAttrVal(&b, "Type", s.Type.String(), 0)

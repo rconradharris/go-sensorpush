@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 const (
@@ -63,14 +63,14 @@ func parseCommaDelim(s string) []string {
 	return items
 }
 
-func parseMeasures(str string) ([]sensorpush.Measure, error) {
+func parseMeasures(str string) ([]sp.Measure, error) {
 	if str == "" {
 		return nil, nil
 	}
 	items := parseCommaDelim(str)
-	ms := make([]sensorpush.Measure, 0, len(items))
+	ms := make([]sp.Measure, 0, len(items))
 	for _, s := range items {
-		m, err := sensorpush.ParseMeasure(s)
+		m, err := sp.ParseMeasure(s)
 		if err != nil {
 			return nil, err
 		}
@@ -79,12 +79,12 @@ func parseMeasures(str string) ([]sensorpush.Measure, error) {
 	return ms, nil
 }
 
-func parseSensorIDs(sm sensorpush.SensorMap, str string) ([]sensorpush.SensorID, error) {
+func parseSensorIDs(sm sp.SensorMap, str string) ([]sp.SensorID, error) {
 	if str == "" {
 		return nil, nil
 	}
 	items := parseCommaDelim(str)
-	ss := make([]sensorpush.SensorID, 0, len(items))
+	ss := make([]sp.SensorID, 0, len(items))
 	for _, nameOrID := range items {
 		s := findSensorByNameOrID(sm, nameOrID)
 		if s == nil {
@@ -123,7 +123,7 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
-	filter := sensorpush.SampleQueryFilter{
+	filter := sp.SampleQueryFilter{
 		Active:   c.active,
 		Measures: measures,
 		Sensors:  sensorIDs,
@@ -163,7 +163,7 @@ func (c *SampleCommand) Run(args []string) error {
 	return nil
 }
 
-func fmtSamples(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensorpush.Samples) string {
+func fmtSamples(fmtU *unitsFormatter, sm sp.SensorMap, ss *sp.Samples) string {
 	var b strings.Builder
 
 	fmt.Fprintf(&b, "%s\n", fmtSampleHeading())
@@ -190,7 +190,7 @@ func fmtSampleHeading() string {
 	)
 }
 
-func fmtSample(b *strings.Builder, fmtU *unitsFormatter, sensor *sensorpush.Sensor, s *sensorpush.Sample) {
+func fmtSample(b *strings.Builder, fmtU *unitsFormatter, sensor *sp.Sensor, s *sp.Sample) {
 	fmt.Fprintf(b, fmtStrSample,
 		sensor.Name,
 		fmtU.Temperature(s.Temperature),
@@ -199,7 +199,7 @@ func fmtSample(b *strings.Builder, fmtU *unitsFormatter, sensor *sensorpush.Sens
 	)
 }
 
-func fmtSamplesVerbose(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensorpush.Samples) string {
+func fmtSamplesVerbose(fmtU *unitsFormatter, sm sp.SensorMap, ss *sp.Samples) string {
 	var b strings.Builder
 
 	fmtAttrVal(&b, "Last Time", fmtU.Time(ss.LastTime), 0)
@@ -224,7 +224,7 @@ func fmtSamplesVerbose(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensor
 	return b.String()
 }
 
-func fmtSampleVerbose(b *strings.Builder, fmtU *unitsFormatter, s *sensorpush.Sample) {
+func fmtSampleVerbose(b *strings.Builder, fmtU *unitsFormatter, s *sp.Sample) {
 	fmtAttrVal(b, "Observed", fmtU.Time(s.Observed), 2)
 	if s.Altitude != nil {
 		fmtAttrVal(b, "Altitude", fmtU.Distance(s.Altitude), 3)

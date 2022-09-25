@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 const (
@@ -48,7 +48,7 @@ func (c *SensorListCommand) Run(args []string) error {
 
 	sc := newClient(ctx)
 
-	f := &sensorpush.SensorListFilter{}
+	f := &sp.SensorListFilter{}
 	if !c.active {
 		f.Active = &c.active
 	}
@@ -83,7 +83,7 @@ func fmtSensorHeading() string {
 	)
 }
 
-func fmtSensorList(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
+func fmtSensorList(fmtU *unitsFormatter, s *sp.Sensor) string {
 	return fmt.Sprintf(fmtStrSensorList,
 		s.Name,
 		s.Type,

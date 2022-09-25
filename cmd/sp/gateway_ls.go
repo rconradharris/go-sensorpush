@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 const (
@@ -68,7 +68,7 @@ func fmtGatewayListHeading() string {
 	)
 }
 
-func fmtGatewayList(fmtU *unitsFormatter, g *sensorpush.Gateway) string {
+func fmtGatewayList(fmtU *unitsFormatter, g *sp.Gateway) string {
 	return fmt.Sprintf(fmtStrGatewayList,
 		g.Name,
 		fmtU.Bool(g.Paired),

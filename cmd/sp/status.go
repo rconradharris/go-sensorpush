@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 func NewStatusCommand() *statusCommand {
@@ -53,7 +53,7 @@ func (c *statusCommand) Run(args []string) error {
 	return nil
 }
 
-func fmtStatus(fmtU *unitsFormatter, st *sensorpush.Status) string {
+func fmtStatus(fmtU *unitsFormatter, st *sp.Status) string {
 	var b strings.Builder
 
 	fmtAttrVal(&b, "Deployed", fmtU.Time(st.Deployed), 0)

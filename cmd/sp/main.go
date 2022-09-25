@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 type Runner interface {
@@ -50,8 +50,8 @@ func DispatchCommand(cmds []Runner, args []string) error {
 	return fmt.Errorf("Unknown subcommand: %s", subcommand)
 }
 
-func newClient(ctx context.Context) *sensorpush.Client {
-	sc := sensorpush.NewClient(nil)
+func newClient(ctx context.Context) *sp.Client {
+	sc := sp.NewClient(nil)
 
 	email := os.Getenv("SENSORPUSH_EMAIL")
 	password := os.Getenv("SENSORPUSH_PASSWORD")

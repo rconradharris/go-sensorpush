@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rconradharris/go-sensorpush/sensorpush"
+	sp "github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 const (
@@ -38,8 +38,8 @@ func padRight(s, padUnit string, length int) string {
 // 3. Case-insensitive name
 //
 // Returns nil if no match is found
-func findSensorByNameOrID(sm sensorpush.SensorMap, nameOrID string) *sensorpush.Sensor {
-	id := sensorpush.NewSensorID(nameOrID)
+func findSensorByNameOrID(sm sp.SensorMap, nameOrID string) *sp.Sensor {
+	id := sp.NewSensorID(nameOrID)
 	if s, ok := sm[id]; ok {
 		return s
 	}
