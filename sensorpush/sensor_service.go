@@ -7,11 +7,20 @@ import (
 
 type SensorService service
 
+type SensorListFilter struct {
+	Active *bool
+}
+
 // List returns a map of SensorIDs to Sensors
-func (s *SensorService) List(ctx context.Context, active bool) (SensorMap, error) {
+func (s *SensorService) List(ctx context.Context, f *SensorListFilter) (SensorMap, error) {
 	sm := SensorMap{}
 
-	sreq := sensorsRequest{Active: &active}
+	sreq := sensorsRequest{}
+	if f != nil {
+		if f.Active != nil {
+			sreq.Active = f.Active
+		}
+	}
 
 	req, err := s.c.NewRequest(ctx, http.MethodPost, "devices/sensors", sreq)
 	if err != nil {

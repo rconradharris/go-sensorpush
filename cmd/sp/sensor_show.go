@@ -50,7 +50,7 @@ func (c *SensorShowCommand) Run(args []string) error {
 	ctx := context.Background()
 	sc := newClient(ctx)
 
-	sm, err := sc.Sensor.List(ctx, true)
+	sm, err := sc.Sensor.List(ctx, nil)
 	if err != nil {
 		return err
 	}

@@ -48,7 +48,12 @@ func (c *SensorListCommand) Run(args []string) error {
 
 	sc := newClient(ctx)
 
-	sm, err := sc.Sensor.List(ctx, c.active)
+	f := &sensorpush.SensorListFilter{}
+	if !c.active {
+		f.Active = &c.active
+	}
+
+	sm, err := sc.Sensor.List(ctx, f)
 	if err != nil {
 		return err
 	}
