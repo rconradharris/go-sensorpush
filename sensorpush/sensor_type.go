@@ -6,6 +6,7 @@ const (
 	SensorTypeUnknown SensorType = iota
 	SensorTypeHT1
 	SensorTypeHTw
+	SensorTypeHTPxw
 )
 
 func (s SensorType) String() string {
@@ -14,6 +15,8 @@ func (s SensorType) String() string {
 		return "HT1"
 	case SensorTypeHTw:
 		return "HT.w"
+	case SensorTypeHTPxw:
+		return "HTP.xw"
 	}
 	return "unknown-sensor-type"
 }
@@ -24,6 +27,8 @@ func newSensorType(s string) SensorType {
 		return SensorTypeHT1
 	case "HT.w":
 		return SensorTypeHTw
+	case "HTP.xw":
+		return SensorTypeHTPxw
 	}
 	return SensorTypeUnknown
 }
