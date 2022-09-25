@@ -65,7 +65,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 	}
 
 	ss := &Samples{
-		Sensors:      make(SensorSamples),
+		Sensors:      make(SamplesMap),
 		Status:       newSampleStatus(ssresp.Status),
 		TotalSamples: ssresp.TotalSamples,
 		TotalSensors: ssresp.TotalSensors,
@@ -80,7 +80,7 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 	ss.LastTime = t
 
 	// Samples
-	for sensorID, sampResps := range ssresp.Sensors {
+	for idstr, sampResps := range ssresp.Sensors {
 		samps := make(SampleSlice, 0, len(sampResps))
 		for _, sr := range sampResps {
 			s, err := newSample(sr)
@@ -91,7 +91,8 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 		}
 
 		sort.Sort(samps)
-		ss.Sensors[sensorID] = samps
+		id := NewSensorID(idstr)
+		ss.Sensors[id] = samps
 		//fmt.Printf("%s: %+v\n", k, v)
 	}
 

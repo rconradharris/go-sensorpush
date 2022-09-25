@@ -109,6 +109,13 @@ func (c *SampleCommand) Run(args []string) error {
 	ctx := context.Background()
 	sc := newClient(ctx)
 
+	sm, err := sc.Sensor.List(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	_ = sm
+
 	filter := sensorpush.SampleQueryFilter{
 		Active:   c.active,
 		Measures: measures,
@@ -140,12 +147,12 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
-	fmt.Print(fmtSamples(fmtU, ss))
+	fmt.Print(fmtSamples(fmtU, sm, ss))
 
 	return nil
 }
 
-func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
+func fmtSamples(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensorpush.Samples) string {
 	var b strings.Builder
 
 	fmtAttrVal(&b, "Last Time", fmtU.Time(ss.LastTime), 0)
@@ -155,10 +162,13 @@ func fmtSamples(fmtU *unitsFormatter, ss *sensorpush.Samples) string {
 	fmtAttrVal(&b, "Truncated", fmtU.Bool(ss.Truncated), 0)
 
 	fmtAttrValHeading(&b, "Sensor Samples", 0)
-	for _, id := range ss.Sensors.IDs() {
-		samples := ss.Sensors[id]
-		name := fmt.Sprintf("Sensor %s", id)
-		fmtAttrValHeading(&b, name, 1)
+
+	for _, s := range sm.SensorsAlpha() {
+		samples, ok := ss.Sensors[s.ID]
+		if !ok {
+			continue
+		}
+		fmtAttrValHeading(&b, s.Name, 1)
 		for _, s := range samples {
 			fmtSample(&b, fmtU, s)
 		}
