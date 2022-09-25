@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
 const (
@@ -27,4 +29,29 @@ func padRight(s, padUnit string, length int) string {
 	padN := 1 + ((length - len(padUnit)) / len(padUnit))
 	ps := s + strings.Repeat(padUnit, padN)
 	return ps[:length]
+}
+
+// Returns sensor that matches:
+//
+// 1. Long ID exact match
+// 2. Short ID exact match
+// 3. Case-insensitive name
+//
+// Returns nil if no match is found
+func findSensorByNameOrID(sm sensorpush.SensorMap, nameOrID string) *sensorpush.Sensor {
+	id := sensorpush.NewSensorID(nameOrID)
+	if s, ok := sm[id]; ok {
+		return s
+	}
+
+	lowerName := strings.ToLower(nameOrID)
+	for _, s := range sm {
+		if s.DeviceID.String() == nameOrID {
+			return s
+		}
+		if strings.ToLower(s.Name) == lowerName {
+			return s
+		}
+	}
+	return nil
 }

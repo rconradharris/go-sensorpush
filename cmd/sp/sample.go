@@ -73,15 +73,18 @@ func parseMeasures(str string) ([]sensorpush.Measure, error) {
 	return ms, nil
 }
 
-func parseSensorIDs(str string) ([]sensorpush.SensorID, error) {
+func parseSensorIDs(sm sensorpush.SensorMap, str string) ([]sensorpush.SensorID, error) {
 	if str == "" {
 		return nil, nil
 	}
 	items := parseCommaDelim(str)
 	ss := make([]sensorpush.SensorID, 0, len(items))
-	for _, s := range items {
-		id := sensorpush.NewSensorID(s)
-		ss = append(ss, id)
+	for _, nameOrID := range items {
+		s := findSensorByNameOrID(sm, nameOrID)
+		if s == nil {
+			return nil, fmt.Errorf("no sensor named '%s' found", nameOrID)
+		}
+		ss = append(ss, s.ID)
 	}
 	return ss, nil
 }
@@ -92,11 +95,6 @@ func (c *SampleCommand) Run(args []string) error {
 	}
 
 	measures, err := parseMeasures(c.measures)
-	if err != nil {
-		return err
-	}
-
-	sensorIDs, err := parseSensorIDs(c.sensors)
 	if err != nil {
 		return err
 	}
@@ -114,7 +112,10 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
-	_ = sm
+	sensorIDs, err := parseSensorIDs(sm, c.sensors)
+	if err != nil {
+		return err
+	}
 
 	filter := sensorpush.SampleQueryFilter{
 		Active:   c.active,
