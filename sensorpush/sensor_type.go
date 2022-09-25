@@ -32,3 +32,21 @@ func newSensorType(s string) SensorType {
 	}
 	return SensorTypeUnknown
 }
+
+func (s SensorType) Features() SensorFeatureSet {
+	fs := newSensorFeatureSet(
+		SensorFeatureHumidity,
+		SensorFeatureTemperature,
+	)
+	switch s {
+	case SensorTypeHT1:
+	case SensorTypeHTw:
+		fs.add(SensorFeatureDewPoint)
+		fs.add(SensorFeatureVPD)
+	case SensorTypeHTPxw:
+		fs.add(SensorFeatureBarometricPressure)
+		fs.add(SensorFeatureDewPoint)
+		fs.add(SensorFeatureVPD)
+	}
+	return fs
+}

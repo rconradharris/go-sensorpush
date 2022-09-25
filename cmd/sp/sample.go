@@ -63,20 +63,20 @@ func parseCommaDelim(s string) []string {
 	return items
 }
 
-func parseMeasures(str string) ([]sp.Measure, error) {
+func parseMeasures(str string) (sp.MeasureMap, error) {
 	if str == "" {
 		return nil, nil
 	}
 	items := parseCommaDelim(str)
-	ms := make([]sp.Measure, 0, len(items))
+	mm := sp.MeasureMap{}
 	for _, s := range items {
 		m, err := sp.ParseMeasure(s)
 		if err != nil {
 			return nil, err
 		}
-		ms = append(ms, m)
+		mm.Add(m)
 	}
-	return ms, nil
+	return mm, nil
 }
 
 func parseSensorIDs(sm sp.SensorMap, str string) ([]sp.SensorID, error) {
@@ -100,7 +100,7 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
-	measures, err := parseMeasures(c.measures)
+	mm, err := parseMeasures(c.measures)
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func (c *SampleCommand) Run(args []string) error {
 
 	filter := sp.SampleQueryFilter{
 		Active:   c.active,
-		Measures: measures,
+		Measures: mm.Measures(),
 		Sensors:  sensorIDs,
 	}
 
@@ -155,7 +155,7 @@ func (c *SampleCommand) Run(args []string) error {
 	}
 
 	if c.verbose {
-		fmt.Print(fmtSamplesVerbose(fmtU, sm, ss))
+		fmt.Print(fmtSamplesVerbose(fmtU, mm, sm, ss))
 	} else {
 		fmt.Print(fmtSamples(fmtU, sm, ss))
 	}
@@ -199,7 +199,7 @@ func fmtSample(b *strings.Builder, fmtU *unitsFormatter, sensor *sp.Sensor, s *s
 	)
 }
 
-func fmtSamplesVerbose(fmtU *unitsFormatter, sm sp.SensorMap, ss *sp.Samples) string {
+func fmtSamplesVerbose(fmtU *unitsFormatter, mm sp.MeasureMap, sm sp.SensorMap, ss *sp.Samples) string {
 	var b strings.Builder
 
 	fmtAttrVal(&b, "Last Time", fmtU.Time(ss.LastTime), 0)
@@ -210,38 +210,63 @@ func fmtSamplesVerbose(fmtU *unitsFormatter, sm sp.SensorMap, ss *sp.Samples) st
 
 	fmtAttrValHeading(&b, "Sensor Samples", 0)
 
-	for _, s := range sm.SensorsAlpha() {
-		samples, ok := ss.Sensors[s.ID]
+	for _, sn := range sm.SensorsAlpha() {
+		of := newObservationFilter(mm, sn)
+		samples, ok := ss.Sensors[sn.ID]
 		if !ok {
 			continue
 		}
-		fmtAttrValHeading(&b, s.Name, 1)
-		for _, s := range samples {
-			fmtSampleVerbose(&b, fmtU, s)
+		fmtAttrValHeading(&b, sn.Name, 1)
+		for _, sample := range samples {
+			fmtSampleVerbose(&b, fmtU, of, sample)
 		}
 	}
 
 	return b.String()
 }
 
-func fmtSampleVerbose(b *strings.Builder, fmtU *unitsFormatter, s *sp.Sample) {
+type observationFilter struct {
+	mm sp.MeasureMap
+	sn *sp.Sensor
+	fs sp.SensorFeatureSet
+}
+
+func newObservationFilter(mm sp.MeasureMap, sn *sp.Sensor) observationFilter {
+	return observationFilter{
+		mm: mm,
+		sn: sn,
+		fs: sn.Type.Features(),
+	}
+}
+
+func (of observationFilter) show(f sp.SensorFeature, m sp.Measure, defined bool) bool {
+	if !of.fs.Has(f) {
+		return false // Sensor doesn't support this feature
+	}
+	if of.mm.Has(m) {
+		return true // User specifically requested this field
+	}
+	return defined // Otherwise, does it have a sensible value?
+}
+
+func fmtSampleVerbose(b *strings.Builder, fmtU *unitsFormatter, of observationFilter, s *sp.Sample) {
 	fmtAttrVal(b, "Observed", fmtU.Time(s.Observed), 2)
-	if s.Altitude != nil {
+	if of.show(sp.SensorFeatureBarometricPressure, sp.MeasureAltitude, s.Altitude != nil) {
 		fmtAttrVal(b, "Altitude", fmtU.Distance(s.Altitude), 3)
 	}
-	if s.BarometricPressure != nil {
+	if of.show(sp.SensorFeatureBarometricPressure, sp.MeasureBarometricPressure, s.BarometricPressure != nil) {
 		fmtAttrVal(b, "Baro Pressure", fmtU.BarometricPressure(s.BarometricPressure), 3)
 	}
-	if s.DewPoint != nil {
+	if of.show(sp.SensorFeatureDewPoint, sp.MeasureDewPoint, s.DewPoint != nil) {
 		fmtAttrVal(b, "Dew Point", fmtU.Temperature(s.DewPoint), 3)
 	}
-	if s.Humidity != nil {
+	if of.show(sp.SensorFeatureHumidity, sp.MeasureHumidity, s.Humidity != nil) {
 		fmtAttrVal(b, "Humidity", fmtU.Humidity(s.Humidity), 3)
 	}
-	if s.Temperature != nil {
+	if of.show(sp.SensorFeatureTemperature, sp.MeasureTemperature, s.Temperature != nil) {
 		fmtAttrVal(b, "Temperature", fmtU.Temperature(s.Temperature), 3)
 	}
-	if s.VPD != nil {
+	if of.show(sp.SensorFeatureVPD, sp.MeasureVPD, s.VPD != nil) {
 		fmtAttrVal(b, "VPD", fmtU.VPD(s.VPD), 3)
 	}
 }

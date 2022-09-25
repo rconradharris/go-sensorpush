@@ -50,3 +50,22 @@ func ParseMeasure(s string) (Measure, error) {
 	}
 	return MeasureBarometricPressure, fmt.Errorf("unknown measure '%s'", s)
 }
+
+type MeasureMap map[Measure]struct{}
+
+func (mm MeasureMap) Add(m Measure) {
+	mm[m] = struct{}{}
+}
+
+func (mm MeasureMap) Has(m Measure) bool {
+	_, ok := mm[m]
+	return ok
+}
+
+func (mm MeasureMap) Measures() []Measure {
+	ss := make([]Measure, 0, len(mm))
+	for m := range mm {
+		ss = append(ss, m)
+	}
+	return ss
+}
