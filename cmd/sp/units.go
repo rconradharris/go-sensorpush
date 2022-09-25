@@ -19,7 +19,7 @@ type unitFlags struct {
 }
 
 func addUnitFlags(fs *flag.FlagSet, f *unitFlags) {
-	fs.StringVar(&f.baro, "baro", "inhg", "inHg (\"inHg\") or millibars (\"mb\")")
+	fs.StringVar(&f.baro, "baro", "inhg", "inHg (\"inhg\") or millibars (\"mb\")")
 	fs.StringVar(&f.dist, "dist", "ft", "feet (\"ft\") or meters (\"m\")")
 	fs.StringVar(&f.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
 }

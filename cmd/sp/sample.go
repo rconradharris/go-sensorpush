@@ -19,8 +19,8 @@ func NewSampleCommand() *SampleCommand {
 
 	c.fs.BoolVar(&c.active, "active", true, "Filter by active devices")
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
-	c.fs.StringVar(&c.measures, "measures", "default",
-		"Measures to include (\"alt\", \"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
+	c.fs.StringVar(&c.measures, "measures", "",
+		"Measures to include (\"alt\", \"baro\", \"dew\", \"hum\", \"temp\", \"vpd\")")
 	c.fs.StringVar(&c.sensors, "sensors", "", "Sensors to include (ID or name)")
 	c.fs.StringVar(&c.startTime, "start", "", "Start time (ex: \"2006-01-02T15:04:05Z07:00\")")
 	c.fs.StringVar(&c.stopTime, "stop", "", "Stop time (ex: \"2006-01-02T15:04:05Z07:00\")")
@@ -58,34 +58,25 @@ func parseCommaDelim(s string) []string {
 }
 
 func parseMeasures(str string) ([]sensorpush.Measure, error) {
-	def := false
-
+	if str == "" {
+		return nil, nil
+	}
 	items := parseCommaDelim(str)
 	ms := make([]sensorpush.Measure, 0, len(items))
 	for _, s := range items {
-		if s == "default" {
-			def = true
-			continue
-		}
 		m, err := sensorpush.ParseMeasure(s)
 		if err != nil {
 			return nil, err
 		}
 		ms = append(ms, m)
 	}
-
-	if def && len(ms) > 0 {
-		return nil, fmt.Errorf("'default' cannot be used with other measures specified")
-	}
-
-	if def {
-		return []sensorpush.Measure{}, nil
-	}
-
 	return ms, nil
 }
 
 func parseSensorIDs(str string) ([]sensorpush.SensorID, error) {
+	if str == "" {
+		return nil, nil
+	}
 	items := parseCommaDelim(str)
 	ss := make([]sensorpush.SensorID, 0, len(items))
 	for _, s := range items {
