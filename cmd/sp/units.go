@@ -16,18 +16,49 @@ type unitFlags struct {
 	baro string
 	dist string
 	temp string
+	time string
 }
 
 func addUnitFlags(fs *flag.FlagSet, f *unitFlags) {
 	fs.StringVar(&f.baro, "baro", "inhg", "inHg (\"inhg\") or millibars (\"mb\")")
 	fs.StringVar(&f.dist, "dist", "ft", "feet (\"ft\") or meters (\"m\")")
 	fs.StringVar(&f.temp, "temp", "f", "fahrenheit (\"f\") or celsius (\"c\")")
+	fs.StringVar(&f.time, "time", "iso", "formats: human|iso")
 }
 
 type unitsFormatter struct {
 	baroU units.PressureUnit
 	distU units.DistanceUnit
 	tempU units.TemperatureUnit
+	timeF timeFormat
+}
+
+type timeFormat int
+
+const (
+	timeFormatHuman timeFormat = iota
+	timeFormatISO
+)
+
+func parseTimeFormat(s string) (timeFormat, error) {
+	var t0 timeFormat
+	switch s {
+	case "human":
+		return timeFormatHuman, nil
+	case "iso":
+		return timeFormatISO, nil
+	}
+	return t0, fmt.Errorf("unknown time unit specifier: %s", s)
+}
+
+func (t timeFormat) String() string {
+	switch t {
+	case timeFormatHuman:
+		return "human"
+	case timeFormatISO:
+		return "iso"
+	}
+	return "unknown"
 }
 
 func newUnitsFormatter(uf *unitFlags) (*unitsFormatter, error) {
@@ -40,17 +71,23 @@ func newUnitsFormatter(uf *unitFlags) (*unitsFormatter, error) {
 		}
 		fmtU.baroU = baroU
 
+		distU, err := units.ParseDistanceUnit(uf.dist)
+		if err != nil {
+			return nil, err
+		}
+		fmtU.distU = distU
+
 		tempU, err := units.ParseTemperatureUnit(uf.temp)
 		if err != nil {
 			return nil, err
 		}
 		fmtU.tempU = tempU
 
-		distU, err := units.ParseDistanceUnit(uf.dist)
+		timeF, err := parseTimeFormat(uf.time)
 		if err != nil {
 			return nil, err
 		}
-		fmtU.distU = distU
+		fmtU.timeF = timeF
 	}
 
 	return fmtU, nil
@@ -149,6 +186,19 @@ func (f *unitsFormatter) SignalStrength(v *units.SignalStrength) string {
 }
 
 func (f *unitsFormatter) Time(t time.Time) string {
+	if t.IsZero() {
+		return notAvail
+	}
+
+	switch f.timeF {
+	case timeFormatISO:
+		return f.ISOTime(t)
+	}
+
+	return f.HumanTime(t)
+}
+
+func (f *unitsFormatter) ISOTime(t time.Time) string {
 	if t.IsZero() {
 		return notAvail
 	}
