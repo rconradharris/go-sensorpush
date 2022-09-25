@@ -10,6 +10,10 @@ import (
 	"github.com/rconradharris/go-sensorpush/sensorpush"
 )
 
+const (
+	fmtStrSample = "%-15s %12s %10s %20s"
+)
+
 func NewSampleCommand() *SampleCommand {
 	c := &SampleCommand{
 		fs: flag.NewFlagSet("sample", flag.ContinueOnError),
@@ -24,6 +28,7 @@ func NewSampleCommand() *SampleCommand {
 	c.fs.StringVar(&c.sensors, "sensors", "", "Sensors to include (ID or name)")
 	c.fs.StringVar(&c.startTime, "start", "", "Start time (ex: \"2006-01-02T15:04:05Z07:00\")")
 	c.fs.StringVar(&c.stopTime, "stop", "", "Stop time (ex: \"2006-01-02T15:04:05Z07:00\")")
+	c.fs.BoolVar(&c.verbose, "verbose", false, "Enable verbose mode")
 	return c
 }
 
@@ -38,6 +43,7 @@ type SampleCommand struct {
 	sensors   string
 	startTime string
 	stopTime  string
+	verbose   bool
 }
 
 func (c *SampleCommand) Name() string {
@@ -148,12 +154,52 @@ func (c *SampleCommand) Run(args []string) error {
 		return err
 	}
 
-	fmt.Print(fmtSamples(fmtU, sm, ss))
+	if c.verbose {
+		fmt.Print(fmtSamplesVerbose(fmtU, sm, ss))
+	} else {
+		fmt.Print(fmtSamples(fmtU, sm, ss))
+	}
 
 	return nil
 }
 
 func fmtSamples(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensorpush.Samples) string {
+	var b strings.Builder
+
+	fmt.Fprintf(&b, "%s\n", fmtSampleHeading())
+	for _, sensor := range sm.SensorsAlpha() {
+		samples, ok := ss.Sensors[sensor.ID]
+		if !ok {
+			continue
+		}
+		for _, sample := range samples {
+			fmtSample(&b, fmtU, sensor, sample)
+			fmt.Fprintf(&b, "\n")
+		}
+	}
+
+	return b.String()
+}
+
+func fmtSampleHeading() string {
+	return fmt.Sprintf(fmtStrSample,
+		"Name",
+		"Temperature",
+		"Humdity",
+		"Observed",
+	)
+}
+
+func fmtSample(b *strings.Builder, fmtU *unitsFormatter, sensor *sensorpush.Sensor, s *sensorpush.Sample) {
+	fmt.Fprintf(b, fmtStrSample,
+		sensor.Name,
+		fmtU.Temperature(s.Temperature),
+		fmtU.Humidity(s.Humidity),
+		fmtU.HumanTime(s.Observed),
+	)
+}
+
+func fmtSamplesVerbose(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensorpush.Samples) string {
 	var b strings.Builder
 
 	fmtAttrVal(&b, "Last Time", fmtU.Time(ss.LastTime), 0)
@@ -171,14 +217,14 @@ func fmtSamples(fmtU *unitsFormatter, sm sensorpush.SensorMap, ss *sensorpush.Sa
 		}
 		fmtAttrValHeading(&b, s.Name, 1)
 		for _, s := range samples {
-			fmtSample(&b, fmtU, s)
+			fmtSampleVerbose(&b, fmtU, s)
 		}
 	}
 
 	return b.String()
 }
 
-func fmtSample(b *strings.Builder, fmtU *unitsFormatter, s *sensorpush.Sample) {
+func fmtSampleVerbose(b *strings.Builder, fmtU *unitsFormatter, s *sensorpush.Sample) {
 	fmtAttrVal(b, "Observed", fmtU.Time(s.Observed), 2)
 	if s.Altitude != nil {
 		fmtAttrVal(b, "Altitude", fmtU.Distance(s.Altitude), 3)

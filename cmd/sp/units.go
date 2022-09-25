@@ -152,8 +152,14 @@ func (f *unitsFormatter) Time(t time.Time) string {
 	if t.IsZero() {
 		return notAvail
 	}
-	//return t.UTC().Format(time.RFC1123)
 	return t.UTC().Format(time.RFC3339)
+}
+
+func (f *unitsFormatter) HumanTime(t time.Time) string {
+	if t.IsZero() {
+		return notAvail
+	}
+	return t.Local().Format(time.RFC822)
 }
 
 func (f *unitsFormatter) Voltage(v *units.Voltage) string {
