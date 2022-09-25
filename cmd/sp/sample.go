@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	fmtStrSample = "%-15s %12s %10s %20s"
+	fmtStrSample = "%-15s %12s %10s %25s"
 )
 
 func NewSampleCommand() *SampleCommand {
@@ -26,8 +26,8 @@ func NewSampleCommand() *SampleCommand {
 	c.fs.StringVar(&c.measures, "measures", "",
 		"Measures to include (\"alt\", \"baro\", \"dew\", \"hum\", \"temp\", \"vpd\")")
 	c.fs.StringVar(&c.sensors, "sensors", "", "Sensors to include (ID or name)")
-	c.fs.StringVar(&c.startTime, "start", "", "Start time (ex: \"2006-01-02T15:04:05Z07:00\")")
-	c.fs.StringVar(&c.stopTime, "stop", "", "Stop time (ex: \"2006-01-02T15:04:05Z07:00\")")
+	c.fs.StringVar(&c.startTime, "start", "", "Start time in ISO format (ex: \"2006-01-02T15:04:05Z07:00\")")
+	c.fs.StringVar(&c.stopTime, "stop", "", "Stop time in ISO format (ex: \"2006-01-02T15:04:05Z07:00\")")
 	c.fs.BoolVar(&c.verbose, "verbose", false, "Enable verbose mode")
 	return c
 }
@@ -195,7 +195,7 @@ func fmtSample(b *strings.Builder, fmtU *unitsFormatter, sensor *sensorpush.Sens
 		sensor.Name,
 		fmtU.Temperature(s.Temperature),
 		fmtU.Humidity(s.Humidity),
-		fmtU.HumanTime(s.Observed),
+		fmtU.Time(s.Observed),
 	)
 }
 
