@@ -32,11 +32,11 @@ type samplesRequest struct {
 	Active bool `json:"active"`
 	//Bulk      bool     `json:"bulk"`
 	//Format    string   `json:"format"`
-	Limit    *int     `json:"limit,omitempty"`
-	Measures []string `json:"measures,omitempty"`
-	//Sensors   []string `json:"sensors:`
-	StartTime string `json:"startTime,omitempty"`
-	StopTime  string `json:"stopTime,omitempty"`
+	Limit     *int     `json:"limit,omitempty"`
+	Measures  []string `json:"measures,omitempty"`
+	Sensors   []string `json:"sensors,omitempty"`
+	StartTime string   `json:"startTime,omitempty"`
+	StopTime  string   `json:"stopTime,omitempty"`
 	//Tags []string
 }
 

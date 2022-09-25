@@ -4,14 +4,34 @@ import (
 	"github.com/rconradharris/go-sensorpush/units"
 )
 
+type SensorID string
+
+func NewSensorID(id string) SensorID {
+	return SensorID(id)
+}
+
+func (s SensorID) String() string {
+	return string(s)
+}
+
+type DeviceID string
+
+func NewDeviceID(id string) DeviceID {
+	return DeviceID(id)
+}
+
+func (id DeviceID) String() string {
+	return string(id)
+}
+
 type Sensor struct {
 	Active         bool
 	Address        string // MAC address
 	Alerts         Alerts
 	BatteryVoltage *units.Voltage
 	Calibration    Calibration
-	DeviceID       string
-	ID             string
+	DeviceID       DeviceID
+	ID             SensorID
 	Name           string
 	RSSI           *units.SignalStrength // strength at last reading
 	// TODO: tags
@@ -72,8 +92,8 @@ func newSensor(sresp sensorResponse) *Sensor {
 			HumidityDelta:    units.NewHumidityDelta(c.Humidity),
 			TemperatureDelta: units.NewTemperatureDeltaF(c.Temperature),
 		},
-		DeviceID: sresp.DeviceID,
-		ID:       sresp.ID,
+		DeviceID: NewDeviceID(sresp.DeviceID),
+		ID:       NewSensorID(sresp.ID),
 		Name:     sresp.Name,
 		Type:     newSensorType(sresp.Type),
 	}

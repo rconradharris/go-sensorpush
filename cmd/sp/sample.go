@@ -21,6 +21,7 @@ func NewSampleCommand() *SampleCommand {
 	c.fs.IntVar(&c.limit, "limit", 0, "Sample limit per sensor")
 	c.fs.StringVar(&c.measures, "measures", "default",
 		"Measures to include (\"alt\", \"baro\", \"default\", \"dew\", \"hum\", \"temp\", \"vpd\")")
+	c.fs.StringVar(&c.sensors, "sensors", "", "Sensors to include (ID or name)")
 	c.fs.StringVar(&c.startTime, "start", "", "Start time (ex: \"2006-01-02T15:04:05Z07:00\")")
 	c.fs.StringVar(&c.stopTime, "stop", "", "Stop time (ex: \"2006-01-02T15:04:05Z07:00\")")
 	return c
@@ -34,6 +35,7 @@ type SampleCommand struct {
 	active    bool
 	limit     int
 	measures  string
+	sensors   string
 	startTime string
 	stopTime  string
 }
@@ -46,16 +48,25 @@ func (c *SampleCommand) Description() string {
 	return "Query for samples"
 }
 
+func parseCommaDelim(s string) []string {
+	items := strings.Split(s, ",")
+	n := len(items)
+	for i := 0; i < n; i++ {
+		items[0] = strings.TrimSpace(items[0])
+	}
+	return items
+}
+
 func parseMeasures(str string) ([]sensorpush.Measure, error) {
 	def := false
-	ms := []sensorpush.Measure{}
-	for _, s := range strings.Split(str, ",") {
-		s = strings.TrimSpace(s)
+
+	items := parseCommaDelim(str)
+	ms := make([]sensorpush.Measure, 0, len(items))
+	for _, s := range items {
 		if s == "default" {
 			def = true
 			continue
 		}
-
 		m, err := sensorpush.ParseMeasure(s)
 		if err != nil {
 			return nil, err
@@ -74,12 +85,27 @@ func parseMeasures(str string) ([]sensorpush.Measure, error) {
 	return ms, nil
 }
 
+func parseSensorIDs(str string) ([]sensorpush.SensorID, error) {
+	items := parseCommaDelim(str)
+	ss := make([]sensorpush.SensorID, 0, len(items))
+	for _, s := range items {
+		id := sensorpush.NewSensorID(s)
+		ss = append(ss, id)
+	}
+	return ss, nil
+}
+
 func (c *SampleCommand) Run(args []string) error {
 	if err := c.fs.Parse(args[1:]); err != nil {
 		return err
 	}
 
 	measures, err := parseMeasures(c.measures)
+	if err != nil {
+		return err
+	}
+
+	sensorIDs, err := parseSensorIDs(c.sensors)
 	if err != nil {
 		return err
 	}
@@ -95,6 +121,7 @@ func (c *SampleCommand) Run(args []string) error {
 	filter := sensorpush.SampleQueryFilter{
 		Active:   c.active,
 		Measures: measures,
+		Sensors:  sensorIDs,
 	}
 
 	if c.limit != 0 {

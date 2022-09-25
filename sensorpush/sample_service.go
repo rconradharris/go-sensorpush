@@ -14,9 +14,9 @@ type SampleQueryFilter struct {
 	Active bool
 	//Bulk      bool
 	//Format    SampleFormat
-	Limit    *int
-	Measures []Measure
-	//Sensors   []Sensor
+	Limit     *int
+	Measures  []Measure
+	Sensors   []SensorID
 	StartTime time.Time
 	StopTime  time.Time
 	//Tags []Tag
@@ -35,6 +35,14 @@ func (s *SampleService) Query(ctx context.Context, f SampleQueryFilter) (*Sample
 			ms = append(ms, m.String())
 		}
 		sreq.Measures = ms
+	}
+
+	if f.Sensors != nil {
+		ss := make([]string, 0, len(f.Sensors))
+		for _, m := range f.Sensors {
+			ss = append(ss, m.String())
+		}
+		sreq.Sensors = ss
 	}
 
 	if !f.StartTime.IsZero() {

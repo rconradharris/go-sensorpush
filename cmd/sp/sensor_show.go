@@ -72,8 +72,8 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 	fmtAttrVal(&b, "Active", fmtU.Bool(s.Active), 0)
 	fmtAttrVal(&b, "Battery", fmtU.Voltage(s.BatteryVoltage), 0)
 	fmtAttrVal(&b, "Signal", fmtU.SignalStrength(s.RSSI), 0)
-	fmtAttrVal(&b, "DeviceID", s.DeviceID, 0)
-	fmtAttrVal(&b, "ID", s.ID, 0)
+	fmtAttrVal(&b, "DeviceID", s.DeviceID.String(), 0)
+	fmtAttrVal(&b, "ID", s.ID.String(), 0)
 
 	c := s.Calibration
 	fmtAttrValHeading(&b, "Calibration", 0)
@@ -107,10 +107,10 @@ func fmtSensorShow(fmtU *unitsFormatter, s *sensorpush.Sensor) string {
 func findSensorByNameOrID(ss sensorpush.SensorSlice, nameOrID string) *sensorpush.Sensor {
 	lowerName := strings.ToLower(nameOrID)
 	for _, s := range ss {
-		if s.ID == nameOrID {
+		if s.ID.String() == nameOrID {
 			return s
 		}
-		if s.DeviceID == nameOrID {
+		if s.DeviceID.String() == nameOrID {
 			return s
 		}
 		if strings.ToLower(s.Name) == lowerName {
